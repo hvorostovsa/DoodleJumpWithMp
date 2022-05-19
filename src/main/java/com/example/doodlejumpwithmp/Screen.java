@@ -1,10 +1,5 @@
 package com.example.doodlejumpwithmp;
 public class Screen {
-    private double h = 0;
-
-//    public void getScore(Doodle doodle) {
-//
-//        double max = doodle.getY() + doodle.getImage().getHeight();
-//        if (h < )
-//    }
+    //перенесу сюда позже методы отвечающие за экран + добавлю score
+    //а также мб добавить относителельную прорисовку размеров
 }

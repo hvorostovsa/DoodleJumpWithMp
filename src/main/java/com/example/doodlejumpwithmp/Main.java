@@ -18,6 +18,7 @@ public class Main extends Application {
 
     private Controller controller;
 
+    //заменю getResource
     Image background = new Image("file:C:\\Users\\User\\IdeaProjects\\DoodleJumpWithMp\\src\\main\\resources\\com\\example\\doodlejumpwithmp\\background.png",
             450, 700, false, false);
     Image platformImage = new Image("file:C:\\Users\\User\\IdeaProjects\\DoodleJumpWithMp\\src\\main\\resources\\com\\example\\doodlejumpwithmp\\Normal_platform.png",

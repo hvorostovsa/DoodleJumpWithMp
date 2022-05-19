@@ -32,4 +32,12 @@ public class Platform {
         coordinateX = x;
     }
 
+    public boolean intersectPlatform(Platform platform) {
+        double bottomY = coordinateY + platformImage.getHeight();
+        double rightX = coordinateX + platformImage.getWidth();
+        double platformTopRightX = platform.getX() + platform.getImage().getWidth();
+        return (bottomY > platform.getY() && bottomY < platform.getY() + 15) &&
+                ((coordinateX >= platform.getX() && coordinateX <= platformTopRightX) ||
+                        (rightX >= platform.getX() && rightX <= platformTopRightX));
+    }
 }

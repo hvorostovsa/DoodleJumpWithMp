@@ -25,6 +25,7 @@ public class Controller {
     public ArrayList<String> getInput() {
         return input;
     }
+    private int interval = 100;
 
     public Controller(Main main, Doodle player, Image image) {
         this.main = main;
@@ -34,7 +35,6 @@ public class Controller {
         oldPlatform.setPosition(185, 680);
         platforms.add(oldPlatform);
         player.setPosition(185, 560);
-        int interval = 200;
         double max = 0;
         while (max < 700) {
             Platform newPlatform = createPlatform(oldPlatform, oldPlatform.getImage(), interval );
@@ -44,15 +44,17 @@ public class Controller {
         }
     }
 
-    public boolean hasPlatform() {
-
-        return false;
+    public boolean containsPlatform(Platform platform, double bottom, double top) {
+        return platform.getY() > top && platform.getY() < bottom;
     }
 
     public Platform createPlatform(Platform previous, Image image, int i) {
         Platform platform = new Platform(image);
         platform.setPosition(new Random().nextInt(380), previous.getY() - new Random().nextInt(i));
-        return platform;
+        if (!platform.intersectPlatform(previous)) {
+            return platform;
+        }
+        return createPlatform(previous, image, i);
     }
 
     public void dragScreen() {
@@ -61,11 +63,15 @@ public class Controller {
                 doodle.setY(300);
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
             }
-            Platform oldPlatform = platforms.get(platforms.size() - 1);
-            platforms.add(createPlatform(oldPlatform, oldPlatform.getImage(), 200));
+        }
+        Platform oldPlatform = platforms.get(platforms.size() - 1);
+        if (!containsPlatform(oldPlatform, 0, interval * (-2)))
+            platforms.add(createPlatform(oldPlatform, oldPlatform.getImage(), interval));
+        if (platforms.get(0).getY() > 700) {
+            platforms.remove(0);
         }
     }
-
+    //переименую drawMoveX() и drawJumping() + добавить game over
     public void drawMoveX() {
         if (input.contains("RIGHT")) {
             doodle.moveX("RIGHT");

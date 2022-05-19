@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class Doodle {
     private Image characterImage;
-    Main main;
 
     private double coordinateX;
     private double coordinateY;
@@ -58,7 +57,7 @@ public class Doodle {
             }
         }
     }
-
+    //добавлю отражение дудла
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
             coordinateX += 4;
@@ -69,7 +68,7 @@ public class Doodle {
     }
 
 
-
+    //переделаю на отталкивание от ног а не концов картинки
     public boolean intersectPlatform(Platform platform) {
         double bottomY = coordinateY + characterImage.getHeight();
         double rightX = coordinateX + characterImage.getWidth();
