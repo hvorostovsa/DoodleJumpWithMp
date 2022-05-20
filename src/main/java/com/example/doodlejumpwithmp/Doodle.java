@@ -2,6 +2,8 @@ package com.example.doodlejumpwithmp;
 
 import javafx.scene.image.Image;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Doodle {
@@ -13,6 +15,9 @@ public class Doodle {
     private boolean fall = false;
     private double score = 0;
     private double physY = 0;
+
+    private double INDENT_LEFT_LEG = 7;
+    private double INDENT_RIGHT_LEG = 38;
 
     public double getX() {
         return coordinateX;
@@ -39,7 +44,7 @@ public class Doodle {
         return characterImage;
     }
 
-    public Doodle(Image characterImage) {
+    public Doodle(Image characterImage) throws IOException {
         this.coordinateY = 0;
         this.coordinateX = 0;
         this.characterImage = characterImage;
@@ -62,17 +67,20 @@ public class Doodle {
             coordinateX += 4;
         }
         else if (move.equals("LEFT")){
+//            INDENT_LEFT_LEG = INDENT_RIGHT_LEG;
+//            INDENT_RIGHT_LEG = INDENT_LEFT_LEG;
             coordinateX -= 4;
         }
     }
 
 
+
     public boolean intersectPlatform(Platform platform) {
-        double leftLeg = coordinateX + 7; //получать координаты ног с отдельного класса
-        double rightLeg = leftLeg + 38 - 7;
+        double leftLeg = coordinateX + INDENT_LEFT_LEG; //получать координаты ног с отдельного класса
+        double rightLeg = leftLeg + INDENT_RIGHT_LEG - INDENT_LEFT_LEG;
         double bottomY = coordinateY + characterImage.getHeight();
         double platformTopRightX = platform.getX() + platform.getImage().getWidth();
-        return (bottomY > platform.getY() && bottomY < platform.getY() + 15) &&
+        return (bottomY > platform.getY() && bottomY < platform.getY() + 10) &&
                 ((leftLeg >= platform.getX() && leftLeg <= platformTopRightX) ||
                         (rightLeg >= platform.getX() && rightLeg <= platformTopRightX));
     }

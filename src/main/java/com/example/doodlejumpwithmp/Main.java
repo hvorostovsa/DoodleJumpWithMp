@@ -56,16 +56,17 @@ public class Main extends Application {
         }
         repaintDoodle(controller.getDoodle());
 
+
     }
 
     private void repaintDoodle(Doodle doodle) {
         gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
+        //gc.drawImage(doodle.getImage(), doodle.getX()  + doodle.getImage().getWidth(), doodle.getY(), -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
     }
 
     private void repaintPlatforms(Platform platform) {
         gc.drawImage(platform.getImage(), platform.getX(), platform.getY());
     }
-
 
     @Override
     public void start(Stage stage) throws IOException {

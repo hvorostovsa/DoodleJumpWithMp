@@ -54,13 +54,13 @@ public class Controller {
         return platform.getY() > top && platform.getY() < bottom;
     }
 
-    public Platform createPlatform(Platform previous, Image image, int i) {
+    public Platform createPlatform(Platform previous, Image image, int interval) {
         Platform platform = new Platform(image);
-        platform.setPosition(new Random().nextInt(380), previous.getY() - new Random().nextInt(i));
+        platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
         if (!platform.intersectPlatform(previous)) {
             return platform;
         }
-        return createPlatform(previous, image, i);
+        return createPlatform(previous, image, interval);
     }
 
     public void dragScreen() {
@@ -95,6 +95,7 @@ public class Controller {
     public void drawJumping() {
         doodle.moveY(getPlatforms());
     }
+
 
     public void update() {
         System.out.println(platforms.size());
