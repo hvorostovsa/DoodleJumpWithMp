@@ -10,11 +10,11 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
 public class Main extends Application {
+//    private final int FPS = 60;  // max fps rate
     private GraphicsContext gc;
     private Controller controller;
 
@@ -50,7 +50,6 @@ public class Main extends Application {
 
     public void repaintScene() {
         gc.drawImage(background, 0, 0);
-
         for (Platform platform : controller.getPlatforms()) {
             repaintPlatforms(platform);
         }
@@ -68,8 +67,7 @@ public class Main extends Application {
 
 
     @Override
-    public void start(Stage stage) throws IOException {
-
+    public void start(Stage stage) {
         Doodle player = new Doodle(doodleImage);
 
         stage.setResizable(false);

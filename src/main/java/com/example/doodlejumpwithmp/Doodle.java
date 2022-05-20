@@ -5,12 +5,11 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public class Doodle {
-    private Image characterImage;
+    private final Image characterImage;
 
     private double coordinateX;
     private double coordinateY;
     private double difY = 0;
-    private boolean fall = false;
     private double score = 0;
     private double physY = 0;
 
@@ -48,15 +47,20 @@ public class Doodle {
     public void moveY(ArrayList<Platform> platforms) {
         difY += 0.3;
         coordinateY += difY;
-        fall = difY > 0;
+        boolean fall = difY > 0;
         for (Platform platform : platforms) {
             if (fall && intersectPlatform(platform)) {
-                difY = -11;
+                jump(); // make jump
                 break;
             }
         }
     }
-    //добавлю отражение дудла
+
+    public void jump() {
+        difY = -11;
+    }
+
+    // добавлю отражение дудла
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
             coordinateX += 4;
@@ -68,7 +72,7 @@ public class Doodle {
 
 
     public boolean intersectPlatform(Platform platform) {
-        double leftLeg = coordinateX + 7; //получать координаты ног с отдельного класса
+        double leftLeg = coordinateX + 7; // получать координаты ног с отдельного класса
         double rightLeg = leftLeg + 38 - 7;
         double bottomY = coordinateY + characterImage.getHeight();
         double platformTopRightX = platform.getX() + platform.getImage().getWidth();
