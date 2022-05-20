@@ -72,8 +72,11 @@ public class Doodle {
                 break;
             }
         }
+
+//        physY = 700 - coordinateY;
+//        System.out.println(physY);
     }
-    //добавлю отражение дудла
+
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
             coordinateX += moveSpeed;
@@ -84,11 +87,11 @@ public class Doodle {
     }
 
     public boolean intersectPlatform(Platform platform) {
-        double leftLeg = coordinateX + INDENT_LEFT_LEG; //получать координаты ног с отдельного класса
+        double leftLeg = coordinateX + INDENT_LEFT_LEG;
         double rightLeg = coordinateX + characterImage.getWidth() - INDENT_RIGHT_LEG;
-        double bottomY = coordinateY + characterImage.getHeight();
+        double bottom = coordinateY + characterImage.getHeight();
         double platformTopRightX = platform.getX() + platform.getImage().getWidth();
-        return (bottomY > platform.getY() && bottomY < platform.getY() + 10) &&
+        return (bottom > platform.getY() && bottom < platform.getY() + 15) &&
                 ((leftLeg >= platform.getX() && leftLeg <= platformTopRightX) ||
                         (rightLeg >= platform.getX() && rightLeg <= platformTopRightX));
     }

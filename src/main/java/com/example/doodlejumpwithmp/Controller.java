@@ -4,8 +4,6 @@ package com.example.doodlejumpwithmp;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class Controller {
