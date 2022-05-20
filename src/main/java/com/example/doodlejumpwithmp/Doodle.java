@@ -50,13 +50,17 @@ public class Doodle {
         this.characterImage = characterImage;
     }
 
+    public void jump() {
+        difY = -11;
+    }
+
     public void moveY(ArrayList<Platform> platforms) {
         difY += 0.3;
         coordinateY += difY;
         fall = difY > 0;
         for (Platform platform : platforms) {
             if (fall && intersectPlatform(platform)) {
-                difY = -11;
+                jump(); // make jump
                 break;
             }
         }

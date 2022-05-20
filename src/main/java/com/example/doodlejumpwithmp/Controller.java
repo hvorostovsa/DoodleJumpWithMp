@@ -98,7 +98,6 @@ public class Controller {
 
 
     public void update() {
-        System.out.println(platforms.size());
         dragScreen();
         drawJumping();
         drawMoveX();

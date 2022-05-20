@@ -15,7 +15,7 @@ public class Platform {
         return coordinateY;
     }
 
-    private Image platformImage;
+    private final Image platformImage;
 
     public Image getImage() {
         return platformImage;

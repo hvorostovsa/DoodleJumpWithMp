@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -68,6 +69,16 @@ public class Main extends Application {
         gc.drawImage(platform.getImage(), platform.getX(), platform.getY());
     }
 
+    private Text setGameOverText(String string) {
+        Text gameOverText = new Text();
+        gameOverText.setX(170);
+        gameOverText.setY(300);
+        Font font = new Font("Times New Roman", 25);
+        gameOverText.setFont(font);
+        gameOverText.setText(string);
+        return gameOverText;
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -107,11 +118,7 @@ public class Main extends Application {
                 controller.update();
                 if (controller.ifFall()) {
                     stop();
-                    Text gameOverText = new Text();
-                    gameOverText.setX(185);
-                    gameOverText.setY(300);
-                    gameOverText.setText("Game Over");
-                    root.getChildren().add(gameOverText);
+                    root.getChildren().add(setGameOverText("Game over"));
 
                 }
             }
