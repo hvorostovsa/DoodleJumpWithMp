@@ -19,6 +19,8 @@ public class Main extends Application {
     private GraphicsContext gc;
     private Controller controller;
 
+    private String mirror = "RIGHT";
+
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
@@ -61,22 +63,23 @@ public class Main extends Application {
     }
 
     private void repaintDoodle(Doodle doodle) {
-        gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
-        //gc.drawImage(doodle.getImage(), doodle.getX()  + doodle.getImage().getWidth(), doodle.getY(), -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
+        if (mirror.equals("RIGHT")) {
+            gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
+        } else gc.drawImage(doodle.getImage(), doodle.getX()  + doodle.getImage().getWidth(), doodle.getY(), -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
     }
 
     private void repaintPlatforms(Platform platform) {
         gc.drawImage(platform.getImage(), platform.getX(), platform.getY());
     }
 
-    private Text setGameOverText(String string) {
+    private void setGameOverText(String string, Group root) {
         Text gameOverText = new Text();
         gameOverText.setX(170);
         gameOverText.setY(300);
         Font font = new Font("Times New Roman", 25);
         gameOverText.setFont(font);
         gameOverText.setText(string);
-        return gameOverText;
+        root.getChildren().add(gameOverText);
     }
 
     @Override
@@ -101,9 +104,10 @@ public class Main extends Application {
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
-            if ( !keys.contains(code) )
+            mirror = code;
+            if (!keys.contains(code)) {
                 keys.add(code);
-
+            }
         });
 
         scene.setOnKeyReleased(event -> {
@@ -118,8 +122,7 @@ public class Main extends Application {
                 controller.update();
                 if (controller.ifFall()) {
                     stop();
-                    root.getChildren().add(setGameOverText("Game over"));
-
+                    setGameOverText("Sasha muzhik", root);
                 }
             }
         };

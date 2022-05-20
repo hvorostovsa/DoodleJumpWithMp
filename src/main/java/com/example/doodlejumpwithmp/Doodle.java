@@ -17,7 +17,7 @@ public class Doodle {
     private double physY = 0;
 
     private double INDENT_LEFT_LEG = 7;
-    private double INDENT_RIGHT_LEG = 38;
+    private double INDENT_RIGHT_LEG = 22;
 
     public double getX() {
         return coordinateX;
@@ -69,10 +69,12 @@ public class Doodle {
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
             coordinateX += 4;
+            INDENT_LEFT_LEG = 7;
+            INDENT_RIGHT_LEG = 22;
         }
         else if (move.equals("LEFT")){
-//            INDENT_LEFT_LEG = INDENT_RIGHT_LEG;
-//            INDENT_RIGHT_LEG = INDENT_LEFT_LEG;
+            INDENT_LEFT_LEG = 22;
+            INDENT_RIGHT_LEG = 7;
             coordinateX -= 4;
         }
     }
@@ -81,7 +83,7 @@ public class Doodle {
 
     public boolean intersectPlatform(Platform platform) {
         double leftLeg = coordinateX + INDENT_LEFT_LEG; //получать координаты ног с отдельного класса
-        double rightLeg = leftLeg + INDENT_RIGHT_LEG - INDENT_LEFT_LEG;
+        double rightLeg = coordinateX + characterImage.getWidth() - INDENT_RIGHT_LEG;
         double bottomY = coordinateY + characterImage.getHeight();
         double platformTopRightX = platform.getX() + platform.getImage().getWidth();
         return (bottomY > platform.getY() && bottomY < platform.getY() + 10) &&
