@@ -1,7 +1,6 @@
 package com.example.doodlejumpwithmp;
 
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
 
@@ -68,14 +67,14 @@ public class Doodle {
     }
 
 
-    //переделаю на отталкивание от ног а не концов картинки
     public boolean intersectPlatform(Platform platform) {
+        double leftLeg = coordinateX + 7; //получать координаты ног с отдельного класса
+        double rightLeg = leftLeg + 38 - 7;
         double bottomY = coordinateY + characterImage.getHeight();
-        double rightX = coordinateX + characterImage.getWidth();
         double platformTopRightX = platform.getX() + platform.getImage().getWidth();
         return (bottomY > platform.getY() && bottomY < platform.getY() + 15) &&
-                ((coordinateX >= platform.getX() && coordinateX <= platformTopRightX) ||
-                        (rightX >= platform.getX() && rightX <= platformTopRightX));
+                ((leftLeg >= platform.getX() && leftLeg <= platformTopRightX) ||
+                        (rightLeg >= platform.getX() && rightLeg <= platformTopRightX));
     }
 
 }

@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -29,11 +30,12 @@ public class Main extends Application {
 
     public void repaintScene() {
         gc.drawImage(background, 0, 0);
-        repaintDoodle(controller.getDoodle());
 
         for (Platform platform : controller.getPlatforms()) {
             repaintPlatforms(platform);
         }
+        repaintDoodle(controller.getDoodle());
+
     }
 
     private void repaintDoodle(Doodle doodle) {
@@ -82,11 +84,18 @@ public class Main extends Application {
             @Override
             public void handle(long now) {
                 controller.update();
+                if (controller.ifFall()) {
+                    stop();
+                    Text gameOverText = new Text();
+                    gameOverText.setX(185);
+                    gameOverText.setY(300);
+                    gameOverText.setText("Game Over");
+                    root.getChildren().add(gameOverText);
+
+                }
             }
         };
-        timer.start();
-        stage.show();
-        repaintScene();
+        timer.start();stage.show();
 
     }
 

@@ -14,12 +14,18 @@ public class Controller {
     private ArrayList<String> input = new ArrayList<>();
     private Doodle doodle;
 
+    private boolean gameOver = false;
+
     public ArrayList<Platform> getPlatforms() {
         return platforms;
     }
 
     public Doodle getDoodle() {
         return doodle;
+    }
+
+    public boolean ifFall() {
+        return gameOver;
     }
 
     public ArrayList<String> getInput() {
@@ -59,19 +65,24 @@ public class Controller {
 
     public void dragScreen() {
         if (doodle.getY() < 300) {
+            doodle.setY(300);
             for (Platform platform : platforms) {
-                doodle.setY(300);
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
             }
+            Platform oldPlatform = platforms.get(platforms.size() - 1);
+            if (!containsPlatform(oldPlatform, 0, interval * (-2)))
+                platforms.add(createPlatform(oldPlatform, oldPlatform.getImage(), interval));
+            if (platforms.get(0).getY() > 700) platforms.remove(0);
+        }  else if (doodle.getY() > 700) {
+            for (Platform platform : platforms) {
+                platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
+            }
+            if (platforms.get(0).getY() < -100) platforms.clear();
+            if (platforms.size() == 0) gameOver = true;
         }
-        Platform oldPlatform = platforms.get(platforms.size() - 1);
-        if (!containsPlatform(oldPlatform, 0, interval * (-2)))
-            platforms.add(createPlatform(oldPlatform, oldPlatform.getImage(), interval));
-        if (platforms.get(0).getY() > 700) {
-            platforms.remove(0);
-        }
+
     }
-    //переименую drawMoveX() и drawJumping() + добавить game over
+    //переименую drawMoveX() и drawJumping()
     public void drawMoveX() {
         if (input.contains("RIGHT")) {
             doodle.moveX("RIGHT");
