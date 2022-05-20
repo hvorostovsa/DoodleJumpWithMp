@@ -10,21 +10,41 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Main extends Application {
-
     private GraphicsContext gc;
-
     private Controller controller;
 
-    //заменю getResource
-    Image background = new Image("file:C:\\Users\\User\\IdeaProjects\\DoodleJumpWithMp\\src\\main\\resources\\com\\example\\doodlejumpwithmp\\background.png",
-            450, 700, false, false);
-    Image platformImage = new Image("file:C:\\Users\\User\\IdeaProjects\\DoodleJumpWithMp\\src\\main\\resources\\com\\example\\doodlejumpwithmp\\Normal_platform.png",
-            70, 15, false, false);
-    Image doodleImage = new Image("file:C:\\Users\\User\\IdeaProjects\\DoodleJumpWithMp\\src\\main\\resources\\com\\example\\doodlejumpwithmp\\Doodle.png",
-            60, 80, false, false);
+    private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
+    private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
+
+    Image background = new Image(
+            getFilePathFromResources("background.png"),
+            450, 700, false, false
+    );
+    Image platformImage = new Image(
+            getFilePathFromResources("Normal_platform.png"),
+            70, 15, false, false
+    );
+    Image doodleImage = new Image(
+            getFilePathFromResources("Doodle.png"),
+            60, 80, false, false
+    );
+
+    private static String getFilePathFromResources(String filename) {
+        String filepath = filename.replace("\\", "/");
+        if (!filename.startsWith(RESOURCE_PREFIX)) {
+            filepath = RESOURCE_PREFIX + filepath;
+        }
+        URL url = Main.class.getClassLoader().getResource(filepath);
+        if (url == null) {
+            System.err.println("File \"" + filename + "\" not found"); // FileNotFoundException
+            System.exit(-1);
+        }
+        return url.toString();
+    }
 
 
     public void repaintScene() {
