@@ -42,7 +42,7 @@ public class Controller {
         player.setPosition(185, 560);
         double max = 0;
         while (max < 700) {
-            Platform newPlatform = createPlatform(oldPlatform, oldPlatform.getImage(), interval);
+            Platform newPlatform = createPlatform(oldPlatform, interval);
             platforms.add(newPlatform);
             max += (oldPlatform.getY() - newPlatform.getY());
             oldPlatform = platforms.get(platforms.size() - 1);
@@ -58,7 +58,7 @@ public class Controller {
         return new Random().nextDouble() < number;
     }
 
-    public Platform createPlatform(Platform previous, Image image, int interval) {
+    public Platform createPlatform(Platform previous, int interval) {
         Platform platform;
         if (getTrueByChance(0.8)) {  // Classic platform by 80% chance
             platform = new Platform(Main.platformImage);
@@ -69,7 +69,7 @@ public class Controller {
         if (!platform.intersectPlatform(previous)) {
             return platform;
         }
-        return createPlatform(previous, image, interval);
+        return createPlatform(previous, interval);
     }
 
     public void dragScreen() {
@@ -80,7 +80,7 @@ public class Controller {
             }
             Platform oldPlatform = platforms.get(platforms.size() - 1);
             if (!containsPlatform(oldPlatform, 0, interval * (-2)))
-                platforms.add(createPlatform(oldPlatform, oldPlatform.getImage(), interval));
+                platforms.add(createPlatform(oldPlatform, interval));
             if (platforms.get(0).getY() > Main.getScreenHeight()) platforms.remove(0);
         }  else if (doodle.getY() > Main.getScreenHeight()) {
             for (Platform platform: platforms) {
@@ -95,10 +95,12 @@ public class Controller {
     public void drawMoveX() {
         if (input.contains("RIGHT")) {
             doodle.moveX("RIGHT");
-        }
-        if (input.contains("LEFT")) {
+        } else if (input.contains("LEFT")) {
             doodle.moveX("LEFT");
+        } else {
+            doodle.moveX("None");
         }
+
     }
 
     public void drawJumping() {

@@ -77,7 +77,10 @@ public class Main extends Application {
     private void repaintDoodle(Doodle doodle) {
         if (mirror.equals("RIGHT")) {
             gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
-        } else gc.drawImage(doodle.getImage(), doodle.getX()  + doodle.getImage().getWidth(), doodle.getY(), -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
+        } else gc.drawImage(
+                doodle.getImage(),
+                doodle.getX()  + doodle.getImage().getWidth(), doodle.getY(),
+                -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
     }
 
     private void repaintPlatforms(Platform platform) {

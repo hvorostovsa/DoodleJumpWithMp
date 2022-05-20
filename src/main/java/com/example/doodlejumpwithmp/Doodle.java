@@ -2,18 +2,15 @@ package com.example.doodlejumpwithmp;
 
 import javafx.scene.image.Image;
 
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Doodle {
-//    private final int maxMoveSpeed = 8;
-//    private final int minMoveSpeed = 4;
-//    private final double acceleration = 0.5;
-//    private final double currentSpeed = 0;
-//    private final int moveDirection = 0; // 0 - not moving; 1 - moving right; -1 - moving left
+    private final int maxMoveSpeed = 7;
+    private final int minMoveSpeed = 4;
+    private final double acceleration = 0.5;
+    private int moveDirection = 0; // 0 - not moving; 1 - moving right; -1 - moving left
 
-    private final int moveSpeed = 6;
+    private double moveSpeed = 0;
 
     private final Image characterImage;
 
@@ -52,7 +49,7 @@ public class Doodle {
         return characterImage;
     }
 
-    public Doodle(Image characterImage) throws IOException {
+    public Doodle(Image characterImage){
         this.coordinateY = 0;
         this.coordinateX = 0;
         this.characterImage = characterImage;
@@ -76,13 +73,27 @@ public class Doodle {
 //        physY = 700 - coordinateY;
 //        System.out.println(physY);
     }
-
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
+            if (moveDirection == 1) {
+                moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
+            } else {
+                moveSpeed = minMoveSpeed;
+                moveDirection = 1;
+            }
             coordinateX += moveSpeed;
         }
-        else if (move.equals("LEFT")){
+        else if (move.equals("LEFT")) {
+            if (moveDirection == -1) {
+                moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
+            } else {
+                moveSpeed = minMoveSpeed;
+                moveDirection = -1;
+            }
             coordinateX -= moveSpeed;
+        } else {
+            moveDirection = 0;
+            moveSpeed = 0;
         }
     }
 
