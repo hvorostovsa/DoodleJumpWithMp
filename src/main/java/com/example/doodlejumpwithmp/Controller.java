@@ -32,11 +32,12 @@ public class Controller {
         return input;
     }
 
-    public Controller(Main main, Doodle player, Image image) {
+    public Controller(Main main, Image doodleImage, Image platformImage) {
         this.main = main;
+        Doodle player = new Doodle(doodleImage);
         this.doodle = player;
 
-        Platform oldPlatform = new Platform(image);
+        Platform oldPlatform = new Platform(platformImage);
         oldPlatform.setPosition(185, Main.getScreenHeight() - 15);
         platforms.add(oldPlatform);
         player.setPosition(185, 560);
@@ -73,6 +74,11 @@ public class Controller {
         }
         return createPlatform(previous, interval);
     }
+    int score = 0;
+
+    public String getScore() {
+        return "Your score:" + score;
+    }
 
     public void dragScreen() {
         if (doodle.getY() < 300) {
@@ -80,6 +86,7 @@ public class Controller {
             for (Platform platform : platforms) {
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
             }
+            score += doodle.getDifY() * -1;
             Platform oldPlatform = platforms.get(platforms.size() - 1);
             if (!containsPlatform(oldPlatform, 0, interval * (-2)))
                 platforms.add(createPlatform(oldPlatform, interval));
@@ -88,13 +95,13 @@ public class Controller {
             for (Platform platform: platforms) {
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
             }
-            if (platforms.get(0).getY() < -100) platforms.clear();
-            if (platforms.size() == 0) gameOver = true;
+            if (platforms.get(0).getY() < -100) gameOver = true;
         }
 
     }
-    //переименую drawMoveX() и drawJumping()
-    public void drawMoveX() {
+
+    public void updateCoordinateX() {
+        System.out.println(input);
         if (input.contains("RIGHT")) {
             doodle.moveX("RIGHT");
         } else if (input.contains("LEFT")) {
@@ -105,7 +112,7 @@ public class Controller {
 
     }
 
-    public void drawJumping() {
+    public void updateCoordinateY() {
         doodle.moveY(getPlatforms());
     }
 
@@ -117,8 +124,8 @@ public class Controller {
 
     public void update() {
         dragScreen();
-        drawJumping();
-        drawMoveX();
+        updateCoordinateY();
+        updateCoordinateX();
         updatePlatforms();
         main.repaintScene();
     }

@@ -8,7 +8,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -27,6 +26,7 @@ public class Main extends Application {
 
     private GraphicsContext gc;
     private Controller controller;
+    ArrayList<String> keys;
 
     static Image background = new Image(
             getFilePathFromResources("background.png"),
@@ -75,6 +75,8 @@ public class Main extends Application {
         for (Platform platform : controller.getPlatforms()) {
             repaintPlatforms(platform);
         }
+
+        repaintScore(controller.getScore());
         repaintDoodle(controller.getDoodle());
     }
 
@@ -91,25 +93,25 @@ public class Main extends Application {
         gc.drawImage(platform.getImage(), platform.getX(), platform.getY());
     }
 
-    private void setGameOverText(String string, Group root) {
-        Text gameOverText = new Text();
-        gameOverText.setX(170);
-        gameOverText.setY(300);
+    private void repaintScore(String string) {
+        Font font = new Font("Times New Roman", 20);
+        gc.setFont(font);
+        gc.fillText(string, 20, 20);
+    }
+
+
+    private void setGameOverText(String string) {
         Font font = new Font("Times New Roman", 25);
-        gameOverText.setFont(font);
-        gameOverText.setText(string);
-        root.getChildren().add(gameOverText);
+        gc.setFont(font);
+        gc.fillText(string, 50, 300);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
 
-        Doodle player = new Doodle(doodleImage);
-
         stage.setResizable(false);
 
         Group root = new Group();
-
         Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
         stage.setScene(scene);
 
@@ -117,15 +119,18 @@ public class Main extends Application {
         root.getChildren().add(canvas);
         this.gc = canvas.getGraphicsContext2D();
 
-        controller = new Controller(this, player, platformImage);
+        controller = new Controller(this, doodleImage, platformImage);
 
-        ArrayList<String> keys = controller.getInput();
+        keys = controller.getInput();
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
             mirror = code;
             if (!keys.contains(code)) {
                 keys.add(code);
+            }
+            if (code.equals("SPACE")) {
+                restartGame();
             }
         });
 
@@ -140,14 +145,20 @@ public class Main extends Application {
             public void handle(long now) {
                 controller.update();
                 if (controller.ifFall()) {
-                    stop();
-                    setGameOverText("Semyon mega harosh", root);
+                    setGameOverText("Game Over! Press Space to restart");
                 }
             }
         };
         timer.start();
         stage.show();
 
+    }
+
+    private void restartGame() {
+        if (controller.ifFall()) {
+            controller = new Controller(this, doodleImage, platformImage);
+            keys = controller.getInput();
+        }
     }
 
     public static void main(String[] args) {

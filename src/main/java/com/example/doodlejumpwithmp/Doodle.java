@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class Doodle {
     private static final int WIDTH = 60;
     private static final int HEIGHT = 80;
-    private final double INDENT_LEFT_LEG = 7;
-    private final double INDENT_RIGHT_LEG = 22;
+    private double indentLeftLeg = 7;
+    private double indentRightLeg = 22;
 
     private final int maxMoveSpeed = 7;
     private final int minMoveSpeed = 4;
@@ -22,8 +22,6 @@ public class Doodle {
     private double coordinateY;
     private double difY = 0;
     private boolean fall = false;
-    private double score = 0;
-    private double physY = 0;
 
     public double getX() {
         return coordinateX;
@@ -72,6 +70,7 @@ public class Doodle {
         difY = -11;
     }
 
+
     public void moveY(ArrayList<Platform> platforms) {
         difY += 0.3;
         coordinateY += difY;
@@ -84,9 +83,6 @@ public class Doodle {
                 }
             }
         }
-
-//        physY = 700 - coordinateY;
-//        System.out.println(physY);
     }
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
@@ -97,6 +93,8 @@ public class Doodle {
                 moveDirection = 1;
             }
             coordinateX += moveSpeed;
+            indentLeftLeg = 7;
+            indentRightLeg = 22;
         }
         else if (move.equals("LEFT")) {
             if (moveDirection == -1) {
@@ -106,6 +104,8 @@ public class Doodle {
                 moveDirection = -1;
             }
             coordinateX -= moveSpeed;
+            indentLeftLeg = 22;
+            indentRightLeg = 7;
         } else {
             moveDirection = 0;
             moveSpeed = 0;
@@ -127,8 +127,8 @@ public class Doodle {
     }
 
     public boolean intersectPlatform(Platform platform) {
-        double leftLeg = coordinateX + INDENT_LEFT_LEG;
-        double rightLeg = coordinateX + characterImage.getWidth() - INDENT_RIGHT_LEG;
+        double leftLeg = coordinateX + indentLeftLeg;
+        double rightLeg = coordinateX + characterImage.getWidth() - indentRightLeg;
         double bottom = coordinateY + characterImage.getHeight();
         double platformTopRightX = platform.getX() + platform.getImage().getWidth();
         return (bottom > platform.getY() && bottom < platform.getY() + 15) &&
