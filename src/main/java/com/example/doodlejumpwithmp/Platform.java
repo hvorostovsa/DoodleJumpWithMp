@@ -56,6 +56,10 @@ public class Platform {
                         (rightX >= platform.getX() && rightX <= platformTopRightX));
     }
 
+    public boolean canJumpToPlatform() {
+        return true;
+    }
+
     public void update() {
         // pass
     }

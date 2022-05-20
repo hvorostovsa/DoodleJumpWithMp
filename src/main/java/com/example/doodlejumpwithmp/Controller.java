@@ -37,11 +37,11 @@ public class Controller {
         this.doodle = player;
 
         Platform oldPlatform = new Platform(image);
-        oldPlatform.setPosition(185, 680);
+        oldPlatform.setPosition(185, Main.getScreenHeight() - 15);
         platforms.add(oldPlatform);
         player.setPosition(185, 560);
         double max = 0;
-        while (max < 700) {
+        while (max < Main.getScreenHeight()) {
             Platform newPlatform = createPlatform(oldPlatform, interval);
             platforms.add(newPlatform);
             max += (oldPlatform.getY() - newPlatform.getY());
@@ -60,10 +60,12 @@ public class Controller {
 
     public Platform createPlatform(Platform previous, int interval) {
         Platform platform;
-        if (getTrueByChance(0.8)) {  // Classic platform by 80% chance
+        if (getTrueByChance(0.7)) {  // Classic platform by 70% chance
             platform = new Platform(Main.platformImage);
-        } else { // Moving platform by 20% chance
+        } else if (getTrueByChance(0.67)) { // Moving platform by 20% chance
             platform = new MovingPlatform(Main.movingPlatformImage);
+        } else { // One Jump Platform by 10% chance
+            platform = new OneJumpPlatform(Main.oneJumpPlatformImage);
         }
         platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
         if (!platform.intersectPlatform(previous)) {

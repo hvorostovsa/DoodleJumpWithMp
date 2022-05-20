@@ -65,8 +65,10 @@ public class Doodle {
         fall = difY > 0;
         for (Platform platform : platforms) {
             if (fall && intersectPlatform(platform)) {
-                jump(); // make jump
-                break;
+                if (platform.canJumpToPlatform()) {
+                    jump(); // make jump
+                    break;
+                }
             }
         }
 
