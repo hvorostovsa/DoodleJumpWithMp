@@ -4,17 +4,19 @@ package com.example.doodlejumpwithmp;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Controller {
-
     private Main main;
+    private Doodle doodle;
+
+    private int interval = 100;
+    private boolean gameOver = false;
 
     private ArrayList<Platform> platforms = new ArrayList<>();
     private ArrayList<String> input = new ArrayList<>();
-    private Doodle doodle;
-
-    private boolean gameOver = false;
 
     public ArrayList<Platform> getPlatforms() {
         return platforms;
@@ -31,7 +33,6 @@ public class Controller {
     public ArrayList<String> getInput() {
         return input;
     }
-    private int interval = 100;
 
     public Controller(Main main, Doodle player, Image image) {
         this.main = main;
@@ -43,7 +44,7 @@ public class Controller {
         player.setPosition(185, 560);
         double max = 0;
         while (max < 700) {
-            Platform newPlatform = createPlatform(oldPlatform, oldPlatform.getImage(), interval );
+            Platform newPlatform = createPlatform(oldPlatform, oldPlatform.getImage(), interval);
             platforms.add(newPlatform);
             max += (oldPlatform.getY() - newPlatform.getY());
             oldPlatform = platforms.get(platforms.size() - 1);
@@ -54,8 +55,18 @@ public class Controller {
         return platform.getY() > top && platform.getY() < bottom;
     }
 
+    private static boolean getTrueByChance(double number) {
+        // double number from 0.0 to 1.0
+        return new Random().nextDouble() < number;
+    }
+
     public Platform createPlatform(Platform previous, Image image, int interval) {
-        Platform platform = new Platform(image);
+        Platform platform;
+        if (getTrueByChance(0.8)) {  // Classic platform by 80% chance
+            platform = new Platform(Main.platformImage);
+        } else { // Moving platform by 20% chance
+            platform = new MovingPlatform(Main.movingPlatformImage);
+        }
         platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
         if (!platform.intersectPlatform(previous)) {
             return platform;
@@ -72,9 +83,9 @@ public class Controller {
             Platform oldPlatform = platforms.get(platforms.size() - 1);
             if (!containsPlatform(oldPlatform, 0, interval * (-2)))
                 platforms.add(createPlatform(oldPlatform, oldPlatform.getImage(), interval));
-            if (platforms.get(0).getY() > 700) platforms.remove(0);
-        }  else if (doodle.getY() > 700) {
-            for (Platform platform : platforms) {
+            if (platforms.get(0).getY() > Main.getScreenHeight()) platforms.remove(0);
+        }  else if (doodle.getY() > Main.getScreenHeight()) {
+            for (Platform platform: platforms) {
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
             }
             if (platforms.get(0).getY() < -100) platforms.clear();
@@ -96,11 +107,17 @@ public class Controller {
         doodle.moveY(getPlatforms());
     }
 
+    private void updatePlatforms() {
+        for (Platform platform: platforms) {
+            platform.update();
+        }
+    }
 
     public void update() {
         dragScreen();
         drawJumping();
         drawMoveX();
+        updatePlatforms();
         main.repaintScene();
     }
 

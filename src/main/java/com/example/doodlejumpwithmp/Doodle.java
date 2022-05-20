@@ -7,7 +7,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Doodle {
-    private Image characterImage;
+//    private final int maxMoveSpeed = 8;
+//    private final int minMoveSpeed = 4;
+//    private final double acceleration = 0.5;
+//    private final double currentSpeed = 0;
+//    private final int moveDirection = 0; // 0 - not moving; 1 - moving right; -1 - moving left
+
+    private final int moveSpeed = 6;
+
+    private final Image characterImage;
 
     private double coordinateX;
     private double coordinateY;
@@ -68,18 +76,12 @@ public class Doodle {
     //добавлю отражение дудла
     public void moveX(String move) {
         if (move.equals("RIGHT")) {
-            coordinateX += 4;
-            INDENT_LEFT_LEG = 7;
-            INDENT_RIGHT_LEG = 22;
+            coordinateX += moveSpeed;
         }
         else if (move.equals("LEFT")){
-            INDENT_LEFT_LEG = 22;
-            INDENT_RIGHT_LEG = 7;
-            coordinateX -= 4;
+            coordinateX -= moveSpeed;
         }
     }
-
-
 
     public boolean intersectPlatform(Platform platform) {
         double leftLeg = coordinateX + INDENT_LEFT_LEG; //получать координаты ног с отдельного класса

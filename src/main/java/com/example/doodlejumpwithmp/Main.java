@@ -16,23 +16,31 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class Main extends Application {
-    private GraphicsContext gc;
-    private Controller controller;
+//    private final int FPS = 60;  // max fps rate
+    private final static int SCREEN_WIDTH = 450;
+    private final static int SCREEN_HEIGHT = 700;
 
     private String mirror = "RIGHT";
 
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
-    Image background = new Image(
+    private GraphicsContext gc;
+    private Controller controller;
+
+    static Image background = new Image(
             getFilePathFromResources("background.png"),
-            450, 700, false, false
+            SCREEN_WIDTH, SCREEN_HEIGHT, false, false
     );
-    Image platformImage = new Image(
+    static Image platformImage = new Image(
             getFilePathFromResources("Normal_platform.png"),
-            70, 15, false, false
+            Platform.getWidth(), Platform.getHeight(), false, false
     );
-    Image doodleImage = new Image(
+    static Image movingPlatformImage = new Image(
+            getFilePathFromResources("Moving_platform.png"),
+            Platform.getWidth(), Platform.getHeight(), false, false
+    );
+    static Image doodleImage = new Image(
             getFilePathFromResources("Doodle.png"),
             60, 80, false, false
     );
@@ -50,16 +58,20 @@ public class Main extends Application {
         return url.toString();
     }
 
+    public static int getScreenHeight() {
+        return SCREEN_HEIGHT;
+    }
+
+    public static int getScreenWidth() {
+        return SCREEN_WIDTH;
+    }
 
     public void repaintScene() {
         gc.drawImage(background, 0, 0);
-
         for (Platform platform : controller.getPlatforms()) {
             repaintPlatforms(platform);
         }
         repaintDoodle(controller.getDoodle());
-
-
     }
 
     private void repaintDoodle(Doodle doodle) {
@@ -91,7 +103,7 @@ public class Main extends Application {
 
         Group root = new Group();
 
-        Scene scene = new Scene(root, 450, 700);
+        Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
         stage.setScene(scene);
 
         Canvas canvas = new Canvas(scene.getWidth(), scene.getHeight());
@@ -122,11 +134,12 @@ public class Main extends Application {
                 controller.update();
                 if (controller.ifFall()) {
                     stop();
-                    setGameOverText("Sasha muzhik", root);
+                    setGameOverText("Semyon mega harosh", root);
                 }
             }
         };
-        timer.start();stage.show();
+        timer.start();
+        stage.show();
 
     }
 
