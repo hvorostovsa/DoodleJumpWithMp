@@ -5,11 +5,15 @@ import javafx.scene.image.Image;
 import java.util.ArrayList;
 
 public class Doodle {
+    private static final int WIDTH = 60;
+    private static final int HEIGHT = 80;
+    private final double INDENT_LEFT_LEG = 7;
+    private final double INDENT_RIGHT_LEG = 22;
+
     private final int maxMoveSpeed = 7;
     private final int minMoveSpeed = 4;
     private final double acceleration = 0.5;
     private int moveDirection = 0; // 0 - not moving; 1 - moving right; -1 - moving left
-
     private double moveSpeed = 0;
 
     private final Image characterImage;
@@ -21,9 +25,6 @@ public class Doodle {
     private double score = 0;
     private double physY = 0;
 
-    private double INDENT_LEFT_LEG = 7;
-    private double INDENT_RIGHT_LEG = 22;
-
     public double getX() {
         return coordinateX;
     }
@@ -32,8 +33,12 @@ public class Doodle {
         return coordinateY;
     }
 
-    public void setY(double i) {
-        coordinateY = i;
+    public void setY(double coordinateY) {
+        this.coordinateY = coordinateY;
+    }
+
+    public void setX(double coordinateX) {
+        this.coordinateX = coordinateX;
     }
 
     public double getDifY() {
@@ -53,6 +58,14 @@ public class Doodle {
         this.coordinateY = 0;
         this.coordinateX = 0;
         this.characterImage = characterImage;
+    }
+
+    public static int getWidth() {
+        return WIDTH;
+    }
+
+    public static int getHeight() {
+        return HEIGHT;
     }
 
     public void jump() {
@@ -96,6 +109,20 @@ public class Doodle {
         } else {
             moveDirection = 0;
             moveSpeed = 0;
+        }
+
+        cycleDoodle();
+    }
+
+    private void cycleDoodle() {
+        // if doodle go beyond the right edge of the screen, he will return from the left one
+        double difference;
+        if (this.coordinateX + WIDTH < 0) {
+            difference = -(this.coordinateX + WIDTH);
+            this.coordinateX = Main.getScreenWidth() - difference;
+        } else if (this.coordinateX > Main.getScreenWidth()) {
+            difference = this.coordinateX - Main.getScreenWidth();
+            this.coordinateX = difference - WIDTH;
         }
     }
 

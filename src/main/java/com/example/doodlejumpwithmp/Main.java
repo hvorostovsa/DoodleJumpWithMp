@@ -46,7 +46,7 @@ public class Main extends Application {
     );
     static Image doodleImage = new Image(
             getFilePathFromResources("Doodle.png"),
-            60, 80, false, false
+            Doodle.getWidth(), Doodle.getHeight(), false, false
     );
 
     private static String getFilePathFromResources(String filename) {
