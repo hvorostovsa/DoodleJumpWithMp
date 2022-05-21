@@ -76,7 +76,7 @@ public class Main extends Application {
             repaintPlatforms(platform);
         }
 
-        repaintScore(controller.getScore());
+        repaintScore(controller.getScoreString());
         repaintDoodle(controller.getDoodle());
     }
 

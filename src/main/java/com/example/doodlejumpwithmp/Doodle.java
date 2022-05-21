@@ -7,8 +7,11 @@ import java.util.ArrayList;
 public class Doodle {
     private static final int WIDTH = 60;
     private static final int HEIGHT = 80;
-    private double indentLeftLeg = 7;
-    private double indentRightLeg = 22;
+    private static final int BASE_INDENT_LEFT_LEG = 7;
+    private static final int BASE_INDENT_RIGHT_LEG = 22;
+
+    private double indentLeftLeg = BASE_INDENT_LEFT_LEG;
+    private double indentRightLeg = BASE_INDENT_RIGHT_LEG;
 
     private final int maxMoveSpeed = 7;
     private final int minMoveSpeed = 4;
@@ -84,31 +87,24 @@ public class Doodle {
             }
         }
     }
-    public void moveX(String move) {
-        if (move.equals("RIGHT")) {
-            if (moveDirection == 1) {
+
+    public void moveX(int newDirection) {
+        // newDirection: 1 => move right, -1 => move left, 0 => no move
+        if (newDirection != 0) { // if need to move
+            if (newDirection == moveDirection) {
                 moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
             } else {
                 moveSpeed = minMoveSpeed;
-                moveDirection = 1;
+                moveDirection = newDirection;
             }
-            coordinateX += moveSpeed;
-            indentLeftLeg = 7;
-            indentRightLeg = 22;
-        }
-        else if (move.equals("LEFT")) {
-            if (moveDirection == -1) {
-                moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
-            } else {
-                moveSpeed = minMoveSpeed;
-                moveDirection = -1;
+            coordinateX += moveDirection * moveSpeed;
+            if (moveDirection == 1) { // move right
+                indentLeftLeg = BASE_INDENT_LEFT_LEG;
+                indentRightLeg = BASE_INDENT_RIGHT_LEG;
+            } else { // move left
+                indentLeftLeg = BASE_INDENT_RIGHT_LEG;
+                indentRightLeg = BASE_INDENT_LEFT_LEG;
             }
-            coordinateX -= moveSpeed;
-            indentLeftLeg = 22;
-            indentRightLeg = 7;
-        } else {
-            moveDirection = 0;
-            moveSpeed = 0;
         }
 
         cycleDoodle();

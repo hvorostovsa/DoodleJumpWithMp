@@ -14,7 +14,7 @@ public class OneJumpPlatform extends Platform {
         if (haveJumped) {
             return false;
         }
-        setX(-10 - getWidth());
+        moveOutFromTheScreen();
         haveJumped = true;
         return true;
     }

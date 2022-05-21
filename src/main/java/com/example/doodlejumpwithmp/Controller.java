@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Controller {
-    private Main main;
-    private Doodle doodle;
+    private final Main main;
+    private final Doodle doodle;
+
+    private final ArrayList<Platform> platforms = new ArrayList<>();
+    private final ArrayList<String> input = new ArrayList<>();
 
     private int interval = 100;
     private boolean gameOver = false;
 
-    private ArrayList<Platform> platforms = new ArrayList<>();
-    private ArrayList<String> input = new ArrayList<>();
+    private int score = 0;
 
     public ArrayList<Platform> getPlatforms() {
         return platforms;
@@ -74,9 +76,8 @@ public class Controller {
         }
         return createPlatform(previous, interval);
     }
-    int score = 0;
 
-    public String getScore() {
+    public String getScoreString() {
         return "Your score:" + score;
     }
 
@@ -101,15 +102,18 @@ public class Controller {
     }
 
     public void updateCoordinateX() {
-        System.out.println(input);
+//        System.out.println(input);
         if (input.contains("RIGHT")) {
-            doodle.moveX("RIGHT");
+            if (input.contains("LEFT")) {
+                doodle.moveX(0); // no move
+            } else {
+                doodle.moveX(1); // move right
+            }
         } else if (input.contains("LEFT")) {
-            doodle.moveX("LEFT");
+            doodle.moveX(-1); // move left
         } else {
-            doodle.moveX("None");
+            doodle.moveX(0); // no move
         }
-
     }
 
     public void updateCoordinateY() {

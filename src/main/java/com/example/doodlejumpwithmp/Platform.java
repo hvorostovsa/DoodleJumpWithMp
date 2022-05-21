@@ -56,6 +56,10 @@ public class Platform {
                         (rightX >= platform.getX() && rightX <= platformTopRightX));
     }
 
+    public void moveOutFromTheScreen() {
+        setX(-100 - getWidth());
+    }
+
     public boolean canJumpToPlatform() {
         return true;
     }
