@@ -4,6 +4,8 @@ package com.example.doodlejumpwithmp;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Controller {
@@ -61,13 +63,35 @@ public class Controller {
         return new Random().nextDouble() < number;
     }
 
+    private static int getRandomEventNumber(Double... numbers) {
+        // pass numbers (1, 1.5, 2.5). Get 0 by chance 20%, 1 by chance 30%, 2 by chance 50%
+        ArrayList<Double> newNumbers = new ArrayList<>(List.of(numbers));
+        double sum = newNumbers.get(0);
+        double currentNumber;
+        for (int i = 1; i < numbers.length; i++) {
+            currentNumber = newNumbers.get(i);
+            sum += currentNumber;
+            newNumbers.set(i, currentNumber + newNumbers.get(i - 1));
+        }
+        double randomNumber = new Random().nextDouble() * sum;
+        int resultIndex = 0;
+        while (randomNumber > newNumbers.get(resultIndex)) {
+            resultIndex += 1;
+        }
+        return resultIndex;
+    }
+
     public Platform createPlatform(Platform previous, int interval) {
         Platform platform;
-        if (getTrueByChance(0.7)) {  // Classic platform by 70% chance
+        int platformNumber = getRandomEventNumber(65.0, 20.0, 10.0);
+        // 0 => Classic platform by 65% chance
+        // 1 => Moving platform by 20% chance
+        // 2 => One Jump Platform by 15% chance
+        if (platformNumber == 0) {  // Classic platform
             platform = new Platform(Main.platformImage);
-        } else if (getTrueByChance(0.67)) { // Moving platform by 20% chance
+        } else if (platformNumber == 1) { // Moving platform
             platform = new MovingPlatform(Main.movingPlatformImage);
-        } else { // One Jump Platform by 10% chance
+        } else { // One Jump Platform
             platform = new OneJumpPlatform(Main.oneJumpPlatformImage);
         }
         platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
