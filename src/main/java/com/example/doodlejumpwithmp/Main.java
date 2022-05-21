@@ -44,6 +44,10 @@ public class Main extends Application {
             getFilePathFromResources("One_jump_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
+    static Image zeroJumpPlatformImage = new Image(
+            getFilePathFromResources("Zero_jump_platform.png"),
+            Platform.getWidth(), Platform.getHeight(), false, false
+    );
     static Image doodleImage = new Image(
             getFilePathFromResources("Doodle.png"),
             Doodle.getWidth(), Doodle.getHeight(), false, false

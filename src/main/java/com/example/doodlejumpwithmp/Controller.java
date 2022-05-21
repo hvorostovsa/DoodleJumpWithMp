@@ -83,16 +83,19 @@ public class Controller {
 
     public Platform createPlatform(Platform previous, int interval) {
         Platform platform;
-        int platformNumber = getRandomEventNumber(65.0, 20.0, 10.0);
+        int platformNumber = getRandomEventNumber(65., 20., 10., 5.);
         // 0 => Classic platform by 65% chance
         // 1 => Moving platform by 20% chance
-        // 2 => One Jump Platform by 15% chance
+        // 2 => One Jump Platform by 10% chance
+        // 3 => Zero Jump Platform by 5% chance
         if (platformNumber == 0) {  // Classic platform
             platform = new Platform(Main.platformImage);
         } else if (platformNumber == 1) { // Moving platform
             platform = new MovingPlatform(Main.movingPlatformImage);
-        } else { // One Jump Platform
+        } else if (platformNumber == 2) { // One Jump Platform
             platform = new OneJumpPlatform(Main.oneJumpPlatformImage);
+        } else {
+            platform = new ZeroJumpPlatform(Main.zeroJumpPlatformImage);
         }
         platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
         if (!platform.intersectPlatform(previous)) {
