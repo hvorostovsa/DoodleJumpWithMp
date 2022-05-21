@@ -21,12 +21,10 @@ public class Main extends Application {
     //    private final int FPS = 60;  // max fps rate
     private final static int SCREEN_WIDTH = 450;
     private final static int SCREEN_HEIGHT = 700;
-    private final static int MENU_BUTTON_WIDTH = 150;
-    private final static int MENU_BUTTON_HEIGHT = 100;
     private final static int LOGO_WIDTH = 400;
     private final static int LOGO_HEIGHT = 100;
 
-    private String mirror = "RIGHT";
+    private String direction = "RIGHT";
 
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
@@ -35,7 +33,6 @@ public class Main extends Application {
     private Controller controller;
     private ArrayList<String> keys;
     private ScreenMode screenMode = ScreenMode.START_MENU;
-    private Boolean canStart = false;
 
     private static MenuButton singleGameButton;
     private static MenuButton multiplayerGameButton;
@@ -66,17 +63,13 @@ public class Main extends Application {
             getFilePathFromResources("Doodle.png"),
             Doodle.getWidth(), Doodle.getHeight(), false, false
     );
-    static Image menuButtonImage = new Image(
-            getFilePathFromResources("MenuButton.png"),
-            MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT, false, false
-    );
     static Image logoImage = new Image(
             getFilePathFromResources("Logo.png"),
             LOGO_WIDTH, LOGO_HEIGHT, false, false
     );
 
 
-    private static String getFilePathFromResources(String filename) {
+    public static String getFilePathFromResources(String filename) {
         String filepath = filename.replace("\\", "/");
         if (!filename.startsWith(RESOURCE_PREFIX)) {
             filepath = RESOURCE_PREFIX + filepath;
@@ -109,12 +102,14 @@ public class Main extends Application {
     }
 
     private void repaintDoodle(Doodle doodle) {
-        if (mirror.equals("RIGHT")) {
+        if (direction.equals("RIGHT"))
             gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
-        } else gc.drawImage(
-                doodle.getImage(),
-                doodle.getX() + doodle.getImage().getWidth(), doodle.getY(),
-                -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
+        else
+            gc.drawImage(
+                    doodle.getImage(),
+                    doodle.getX() + doodle.getImage().getWidth(), doodle.getY(),
+                    -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
+
     }
 
     private void repaintPlatforms(Platform platform) {
@@ -130,18 +125,18 @@ public class Main extends Application {
     private void runStartingMenu() {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 20, 20);
-        singleGameButton = new MenuButton(gc, menuButtonImage, "Single Game");
-        multiplayerGameButton = new MenuButton(gc, menuButtonImage, "Multiplayer");
+        singleGameButton = new MenuButton(gc, "Single Game");
+        multiplayerGameButton = new MenuButton(gc, "Multiplayer");
         singleGameButton.createOnPosition(100, 250);
         multiplayerGameButton.createOnPosition(190, 350);
     }
 
     private void runConnectingMenu() {
         gc.drawImage(background, 0, 0);
-        setText("Press ESCAPE to return start menu", 50, 500);
+        setText("Press ESCAPE to return start menu", 50, 550);
         gc.drawImage(logoImage, 20, 20);
-        serverRoomButton = new MenuButton(gc, menuButtonImage, "Create Room");
-        clientRoomButton = new MenuButton(gc, menuButtonImage, "Find Room");
+        serverRoomButton = new MenuButton(gc, "Create Room");
+        clientRoomButton = new MenuButton(gc, "Find Room");
         serverRoomButton.createOnPosition(100, 250);
         clientRoomButton.createOnPosition(190, 350);
     }
@@ -166,7 +161,7 @@ public class Main extends Application {
         submitButton.setPrefWidth(80);
         submitButton.setPrefHeight(20);
         submitButton.setOnAction(event -> {
-                    screenMode = ScreenMode.GAME;
+                    root.getChildren().remove(text);
                     root.getChildren().add(text);
                 }
         );
@@ -223,6 +218,7 @@ public class Main extends Application {
                         controller.update();
                         if (controller.ifFall()) {
                             setText("Game Over! Press Space to restart", 50, 300);
+                            setText("Or press Escape to return to main menu", 30, 320);
                         }
                     }
                     case START_MENU -> runStartingMenu();
@@ -253,30 +249,40 @@ public class Main extends Application {
             String code = event.getCode().toString();
 
             if (screenMode == ScreenMode.GAME) {
-                mirror = code;
-                if (!keys.contains(code)) {
-                    keys.add(code);
+                if (code.equals("RIGHT") || code.equals("LEFT")) {
+                    direction = code;
+                    if (!keys.contains(code)) {
+                        keys.add(code);
+                    }
                 }
-                if (code.equals("SPACE") && controller.ifFall()) {
-                    restartGame();
+                if (controller.ifFall()) {
+                    if (code.equals("SPACE")) restartGame();
+                    if (code.equals("ESCAPE")) {
+                        screenMode = ScreenMode.START_MENU;
+                        restartGame();
+                    }
                 }
-            }
-
-            if (code.equals("F")) {
-                root.getChildren().clear();
-                root.getChildren().add(canvas);
-                this.gc = canvas.getGraphicsContext2D();
-                timer.start();
-            }
-            if (code.equals("ESCAPE")) {
+            } else if (code.equals("ESCAPE")) {
                 screenMode = ScreenMode.START_MENU;
                 restartGame();
+            }
+
+            if (screenMode == ScreenMode.SERVER_ROOM) {
+                if (code.equals("F")) {
+                    screenMode = ScreenMode.GAME;
+                    System.out.println(1);
+                    root.getChildren().clear();
+                    root.getChildren().add(canvas);
+                    this.gc = canvas.getGraphicsContext2D();
+                    timer.start();
+                }
             }
         });
 
         scene.setOnKeyReleased(event -> {
             String code = event.getCode().toString();
-            keys.remove(code);
+            if (code.equals("RIGHT") || code.equals("LEFT"))
+                keys.remove(code);
         });
 
         stage.show();
