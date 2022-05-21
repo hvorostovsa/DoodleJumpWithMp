@@ -33,14 +33,14 @@ public class Main extends Application {
 
     private GraphicsContext gc;
     private Controller controller;
-    ArrayList<String> keys;
-    private String screen = "Starting Menu";
+    private ArrayList<String> keys;
+    private ScreenMode screenMode = ScreenMode.START_MENU;
     private Boolean canStart = false;
 
     private static MenuButton singleGameButton;
     private static MenuButton multiplayerGameButton;
-    private static MenuButton createRoomButton;
-    private static MenuButton connectRoomButton;
+    private static MenuButton serverRoomButton;
+    private static MenuButton clientRoomButton;
 
     static Image background = new Image(
             getFilePathFromResources("background.png"),
@@ -138,41 +138,51 @@ public class Main extends Application {
 
     private void runConnectingMenu() {
         gc.drawImage(background, 0, 0);
+        setText("Press ESCAPE to return start menu", 50, 500);
         gc.drawImage(logoImage, 20, 20);
-        createRoomButton = new MenuButton(gc, menuButtonImage, "Create Room");
-        connectRoomButton = new MenuButton(gc, menuButtonImage, "Find Room");
-        createRoomButton.createOnPosition(100, 250);
-        connectRoomButton.createOnPosition(190, 350);
+        serverRoomButton = new MenuButton(gc, menuButtonImage, "Create Room");
+        clientRoomButton = new MenuButton(gc, menuButtonImage, "Find Room");
+        serverRoomButton.createOnPosition(100, 250);
+        clientRoomButton.createOnPosition(190, 350);
     }
 
-    private void openServerSettings(Group root, AnimationTimer timer) {
+    private void openConnectionSettings(Group root, AnimationTimer timer, String mode) {
+
         timer.stop();
+
         ImageView iv = new ImageView(background);
+
+        Text text = new Text();
+        if (mode.equals("Server")) text.setText("Everything is ready. Press F to start");
+        else if (mode.equals("Client")) text.setText("Everything is ready. Waiting for server");
+        Font font = new Font("Times New Roman", 15);
+        text.setFont(font);
+        text.setX(150);
+        text.setY(415);
+
         Button submitButton = new Button("Submit");
         submitButton.setTranslateX(50);
         submitButton.setTranslateY(400);
         submitButton.setPrefWidth(80);
         submitButton.setPrefHeight(20);
-        Text text = new Text("Everything is ready. Press F to start");
-        Font font = new Font("Times New Roman", 15);
-        text.setFont(font);
-        text.setX(150);
-        text.setY(415);
         submitButton.setOnAction(event -> {
-                    screen = "Game";
+                    screenMode = ScreenMode.GAME;
                     root.getChildren().add(text);
                 }
         );
+
         TextField tfID = new TextField("Enter Your ID here");
         tfID.setTranslateX(50);
         tfID.setTranslateY(300);
         tfID.setPrefWidth(350);
         tfID.setPrefHeight(20);
+
         TextField tfPort = new TextField("Enter Your port here");
         tfPort.setTranslateX(50);
         tfPort.setTranslateY(350);
         tfPort.setPrefWidth(350);
         tfPort.setPrefHeight(20);
+
         root.getChildren().clear();
         root.getChildren().add(iv);
         root.getChildren().add(submitButton);
@@ -181,45 +191,10 @@ public class Main extends Application {
 
     }
 
-    private void openClientSettings(Group root, AnimationTimer timer) {
-        timer.stop();
-        ImageView iv = new ImageView(background);
-        Button submitButton = new Button("Submit");
-        submitButton.setTranslateX(50);
-        submitButton.setTranslateY(400);
-        submitButton.setPrefWidth(80);
-        submitButton.setPrefHeight(20);
-        Text text = new Text("Everything is ready. Waiting for server");
-        Font font = new Font("Times New Roman", 15);
-        text.setFont(font);
-        text.setX(150);
-        text.setY(415);
-        submitButton.setOnAction(event -> {
-                    screen = "Game";
-                    root.getChildren().add(text);
-                }
-        );
-        TextField tfID = new TextField("Enter Your ID here");
-        tfID.setTranslateX(50);
-        tfID.setTranslateY(300);
-        tfID.setPrefWidth(350);
-        tfID.setPrefHeight(20);
-        TextField tfPort = new TextField("Enter Your port here");
-        tfPort.setTranslateX(50);
-        tfPort.setTranslateY(350);
-        tfPort.setPrefWidth(350);
-        tfPort.setPrefHeight(20);
-        root.getChildren().clear();
-        root.getChildren().add(iv);
-        root.getChildren().add(submitButton);
-        root.getChildren().add(tfID);
-        root.getChildren().add(tfPort);
-    }
-
-    private void setGameOverText(String string) {
+    private void setText(String string, double x, double y) {
         Font font = new Font("Times New Roman", 25);
         gc.setFont(font);
-        gc.fillText(string, 50, 300);
+        gc.fillText(string, x, y);
     }
 
     @Override
@@ -243,41 +218,41 @@ public class Main extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                switch (screen) {
-                    case "Game" -> {
+                switch (screenMode) {
+                    case GAME -> {
                         controller.update();
                         if (controller.ifFall()) {
-                            setGameOverText("Game Over! Press Space to restart");
+                            setText("Game Over! Press Space to restart", 50, 300);
                         }
                     }
-                    case "Starting Menu" -> runStartingMenu();
-                    case "Connecting Menu" -> runConnectingMenu();
-                    case "Create Room" -> openServerSettings(root, this);
-                    case "Connect room" -> openClientSettings(root, this);
+                    case START_MENU -> runStartingMenu();
+                    case CONNECTION_MENU -> runConnectingMenu();
+                    case SERVER_ROOM -> openConnectionSettings(root, this, "Server");
+                    case CLIENT_ROOM -> openConnectionSettings(root, this, "Client");
                 }
             }
         };
         timer.start();
 
         scene.setOnMouseClicked(event -> {
-            if (screen.equals("Starting Menu")) {
+            if (screenMode == ScreenMode.START_MENU) {
                 if (singleGameButton.getBoundary().contains(event.getX(), event.getY()))
-                    screen = "Game";
+                    screenMode = ScreenMode.GAME;
                 if (multiplayerGameButton.getBoundary().contains(event.getX(), event.getY()))
-                    screen = "Connecting Menu";
-            } else if (screen.equals("Connecting Menu")) {
-                if (createRoomButton.getBoundary().contains(event.getX(), event.getY())) {
-                    screen = "Create Room";
+                    screenMode = ScreenMode.CONNECTION_MENU;
+            } else if (screenMode == ScreenMode.CONNECTION_MENU) {
+                if (serverRoomButton.getBoundary().contains(event.getX(), event.getY())) {
+                    screenMode = ScreenMode.SERVER_ROOM;
                 }
-                if (connectRoomButton.getBoundary().contains(event.getX(), event.getY()))
-                    screen = "Connect room";
+                if (clientRoomButton.getBoundary().contains(event.getX(), event.getY()))
+                    screenMode = ScreenMode.CLIENT_ROOM;
             }
         });
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
 
-            if (screen.equals("Game")) {
+            if (screenMode == ScreenMode.GAME) {
                 mirror = code;
                 if (!keys.contains(code)) {
                     keys.add(code);
@@ -294,7 +269,7 @@ public class Main extends Application {
                 timer.start();
             }
             if (code.equals("ESCAPE")) {
-                screen = "Starting Menu";
+                screenMode = ScreenMode.START_MENU;
                 restartGame();
             }
         });
