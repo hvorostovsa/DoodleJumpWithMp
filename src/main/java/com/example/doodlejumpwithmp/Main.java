@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class Main extends Application {
-    //    private final int FPS = 60;  // max fps rate
     private final static int SCREEN_WIDTH = 450;
     private final static int SCREEN_HEIGHT = 700;
     private final static int LOGO_WIDTH = 400;
@@ -77,7 +76,6 @@ public class Main extends Application {
             LOGO_WIDTH, LOGO_HEIGHT, false, false
     );
 
-
     public static String getFilePathFromResources(String filename) {
         String filepath = filename.replace("\\", "/");
         if (!filename.startsWith(RESOURCE_PREFIX)) {
@@ -98,7 +96,6 @@ public class Main extends Application {
     public static int getScreenWidth() {
         return SCREEN_WIDTH;
     }
-
 
     public String getIp() {
         return ip;
@@ -130,8 +127,8 @@ public class Main extends Application {
             gc.drawImage(
                     doodle.getImage(),
                     doodle.getX() + doodle.getImage().getWidth(), doodle.getY(),
-                    -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight());
-
+                    -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight()
+            );
     }
 
     private void repaintPlatforms(Platform platform) {
@@ -162,17 +159,22 @@ public class Main extends Application {
         clientRoomButton.createOnPosition(190, 350);
     }
 
-    private void openConnectionSettings(String mode) {
+    private void openConnectionSettings(boolean isServer) {
+        controller.setIsServer(isServer);
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 20, 20);
         ipTextField = new MenuTextField(gc);
-        String IP = inputIp.toString();
-        String Port = inputPort.toString();
-        ipTextField.createTextField(50, 300, IP);
+        String ip = inputIp.toString();
+        String port = inputPort.toString();
+        ipTextField.createTextField(50, 300, ip);
         portTextField = new MenuTextField(gc);
-        portTextField.createTextField(50, 350, Port);
+        portTextField.createTextField(50, 350, port);
         submitButton = new MenuButton(gc, "Submit");
         submitButton.createOnPosition(150, 500);
+    }
+
+    private void openConnectionSettings() {
+        openConnectionSettings(false);
     }
 
     private void setText(String string, double x, double y) {
@@ -183,7 +185,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-
         stage.setResizable(false);
 
         Group root = new Group();
@@ -207,8 +208,8 @@ public class Main extends Application {
                     case MULTIPLAYER_GAME -> controller.update(); // TODO add second doodle
                     case START_MENU -> runStartingMenu();
                     case CONNECTION_MENU -> runConnectingMenu();
-                    case SERVER_ROOM -> openConnectionSettings("Server");
-                    case CLIENT_ROOM -> openConnectionSettings("Client");
+                    case SERVER_ROOM -> openConnectionSettings(true);
+                    case CLIENT_ROOM -> openConnectionSettings();
                 }
             }
         };
@@ -240,8 +241,11 @@ public class Main extends Application {
                     portActive = false;
                 }
                 if (submitButton.getBoundary().contains(event.getX(), event.getY())) {
-                        ip = inputIp.toString();
-                        port = inputPort.toString();
+                    ip = inputIp.toString();
+                    port = inputPort.toString();
+                    if (controller.getIsServer()) {
+                        // pass
+                    }
                     System.out.println(ip + " " + port);
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
                 }

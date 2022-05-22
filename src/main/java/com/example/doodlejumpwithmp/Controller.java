@@ -20,6 +20,7 @@ public class Controller {
 
     private int interval = 100;
     private boolean gameOver = false;
+    private boolean isServer; // null if single player. True if user is host.
 
     private int score = 0;
 
@@ -29,6 +30,14 @@ public class Controller {
 
     public Doodle getDoodle() {
         return doodle;
+    }
+
+    public void setIsServer(boolean isServer) {
+        this.isServer = isServer;
+    }
+
+    public boolean getIsServer() {
+        return isServer;
     }
 
     public boolean ifFall() {
