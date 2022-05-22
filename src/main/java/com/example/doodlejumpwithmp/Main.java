@@ -27,11 +27,11 @@ public class Main extends Application {
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
-    private final StringBuilder inputIP = new StringBuilder();
+    private final StringBuilder inputIp = new StringBuilder();
     private final StringBuilder inputPort = new StringBuilder();
 
-    private String IP;
-    private String Port;
+    private String ip;
+    private String port;
 
     private GraphicsContext gc;
     private Controller controller;
@@ -42,10 +42,10 @@ public class Main extends Application {
     private static MenuButton multiplayerGameButton;
     private static MenuButton serverRoomButton;
     private static MenuButton clientRoomButton;
-    private static MenuTextField IPTextField;
-    private boolean IPActive = false;
-    private static MenuTextField PortTextField;
-    private boolean PortActive = false;
+    private static MenuTextField ipTextField;
+    private boolean ipActive = false;
+    private static MenuTextField portTextField;
+    private boolean portActive = false;
     private static MenuButton submitButton;
 
     static Image background = new Image(
@@ -100,12 +100,12 @@ public class Main extends Application {
     }
 
 
-    public String getIP() {
-        return IP;
+    public String getIp() {
+        return ip;
     }
 
     public String getPort() {
-        return Port;
+        return port;
     }
 
     public void repaintScene() {
@@ -165,12 +165,12 @@ public class Main extends Application {
     private void openConnectionSettings(String mode) {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 20, 20);
-        IPTextField = new MenuTextField(gc);
-        String IP = inputIP.toString();
+        ipTextField = new MenuTextField(gc);
+        String IP = inputIp.toString();
         String Port = inputPort.toString();
-        IPTextField.createTextField(50, 300, IP);
-        PortTextField = new MenuTextField(gc);
-        PortTextField.createTextField(50, 350, Port);
+        ipTextField.createTextField(50, 300, IP);
+        portTextField = new MenuTextField(gc);
+        portTextField.createTextField(50, 350, Port);
         submitButton = new MenuButton(gc, "Submit");
         submitButton.createOnPosition(150, 500);
     }
@@ -229,20 +229,20 @@ public class Main extends Application {
             } else if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 // TODO add restart button when doodle fall
             } else {
-                if (IPTextField.getBoundary().contains(event.getX(), event.getY())) {
-                    IPActive = true;
-                    PortActive = false;
-                } else if (PortTextField.getBoundary().contains(event.getX(), event.getY())) {
-                    IPActive = false;
-                    PortActive = true;
+                if (ipTextField.getBoundary().contains(event.getX(), event.getY())) {
+                    ipActive = true;
+                    portActive = false;
+                } else if (portTextField.getBoundary().contains(event.getX(), event.getY())) {
+                    ipActive = false;
+                    portActive = true;
                 } else {
-                    IPActive = false;
-                    PortActive = false;
+                    ipActive = false;
+                    portActive = false;
                 }
                 if (submitButton.getBoundary().contains(event.getX(), event.getY())) {
-                        IP = inputIP.toString();
-                        Port = inputPort.toString();
-                    System.out.println(IP + " " + Port);
+                        ip = inputIp.toString();
+                        port = inputPort.toString();
+                    System.out.println(ip + " " + port);
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
                 }
             }
@@ -252,16 +252,16 @@ public class Main extends Application {
             String code = event.getCode().toString();
 
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
-                if (IPActive) {
+                if (ipActive) {
                     if (event.getCode().isDigitKey()) {
-                        inputIP.append(code.substring(code.length() - 1));
+                        inputIp.append(code.substring(code.length() - 1));
                     }
                     if (code.equals("BACK_SPACE")) {
-                        inputIP.delete(inputIP.length() - 1, inputIP.length());
+                        inputIp.delete(inputIp.length() - 1, inputIp.length());
                     }
                 }
 
-                if (PortActive) {
+                if (portActive) {
                     if (event.getCode().isDigitKey()) {
                         inputPort.append(code.substring(code.length() - 1));
                     }

@@ -6,7 +6,6 @@ import com.example.doodlejumpwithmp.model.platform.MovingPlatform;
 import com.example.doodlejumpwithmp.model.platform.OneJumpPlatform;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import com.example.doodlejumpwithmp.model.platform.ZeroJumpPlatform;
-import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.List;
