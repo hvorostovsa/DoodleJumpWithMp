@@ -119,7 +119,7 @@ public class Main extends Application {
 
         repaintScore();
         repaintDoodle(controller.getDoodle());
-        // TODO add buttons instead of text
+
         if (controller.ifFall()) {
             gc.drawImage(logoImage, 50, 20);
             firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
@@ -259,9 +259,11 @@ public class Main extends Application {
             } else if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
                     restartGame();
-                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
+                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY())) {
                     screenMode = ScreenMode.START_MENU;
-                restartGame();
+                    restartGame();
+                }
+
             } else {
                 if (ipTextField.getBoundary().contains(event.getX(), event.getY())) {
                     ipIsActive = true;
