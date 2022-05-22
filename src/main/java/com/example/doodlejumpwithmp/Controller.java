@@ -83,7 +83,7 @@ public class Controller {
 
     public Platform createPlatform(Platform previous, int interval) {
         Platform platform;
-        int platformNumber = getRandomEventNumber(65., 20., 10., 5.);
+        int platformNumber = getRandomEventNumber(65., 20., 10., 0.);
         // 0 => Classic platform by 65% chance
         // 1 => Moving platform by 20% chance
         // 2 => One Jump Platform by 10% chance
