@@ -264,12 +264,10 @@ public class Main extends Application {
                 }
 
                 if (PortActive) {
-                    if (event.getCode().isDigitKey() && inputPort.length() < 5) {
+                    if (event.getCode().isDigitKey() && inputPort.length() < 5)
                         inputPort.append(code.substring(code.length() - 1));
-                    }
-                    if (code.equals("BACK_SPACE") && inputPort.length() != 0) {
+                    if (code.equals("BACK_SPACE") && inputPort.length() != 0)
                         inputPort.delete(inputPort.length() - 1, inputPort.length());
-                    }
                 }
             }
 
