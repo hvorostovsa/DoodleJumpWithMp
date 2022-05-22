@@ -1,10 +1,14 @@
 package com.example.doodlejumpwithmp;
 
 
+import com.example.doodlejumpwithmp.model.doodle.Doodle;
+import com.example.doodlejumpwithmp.model.platform.MovingPlatform;
+import com.example.doodlejumpwithmp.model.platform.OneJumpPlatform;
+import com.example.doodlejumpwithmp.model.platform.Platform;
+import com.example.doodlejumpwithmp.model.platform.ZeroJumpPlatform;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -36,12 +40,12 @@ public class Controller {
         return input;
     }
 
-    public Controller(Main main, Image doodleImage, Image platformImage) {
+    public Controller(Main main) {
         this.main = main;
-        Doodle player = new Doodle(doodleImage);
+        Doodle player = new Doodle(Main.doodleImage);
         this.doodle = player;
 
-        Platform oldPlatform = new Platform(platformImage);
+        Platform oldPlatform = new Platform(Main.platformImage);
         oldPlatform.setPosition(185, Main.getScreenHeight() - 15);
         platforms.add(oldPlatform);
         player.setPosition(185, 560);
@@ -88,15 +92,13 @@ public class Controller {
         // 1 => Moving platform by 20% chance
         // 2 => One Jump Platform by 10% chance
         // 3 => Zero Jump Platform by 5% chance
-        if (platformNumber == 0) {  // Classic platform
-            platform = new Platform(Main.platformImage);
-        } else if (platformNumber == 1) { // Moving platform
-            platform = new MovingPlatform(Main.movingPlatformImage);
-        } else if (platformNumber == 2) { // One Jump Platform
-            platform = new OneJumpPlatform(Main.oneJumpPlatformImage);
-        } else {
-            platform = new ZeroJumpPlatform(Main.zeroJumpPlatformImage);
-        }
+        platform = switch (platformNumber) {
+            case 0 -> new Platform(Main.platformImage); // Classic platform by 65% chance
+            case 1 -> new MovingPlatform(Main.movingPlatformImage); // Moving platform by 20% chance
+            case 2 -> new OneJumpPlatform(Main.oneJumpPlatformImage); // One Jump Platform by 10% chance
+            case 3 -> new ZeroJumpPlatform(Main.zeroJumpPlatformImage); // Zero Jump Platform by 5% chance
+            default -> throw new IllegalStateException("Unexpected value: " + platformNumber);
+        };
         platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
         if (!platform.intersectPlatform(previous)) {
             return platform;

@@ -1,5 +1,7 @@
 package com.example.doodlejumpwithmp;
 
+import com.example.doodlejumpwithmp.model.doodle.Doodle;
+import com.example.doodlejumpwithmp.model.platform.Platform;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -210,11 +212,9 @@ public class Main extends Application {
         this.gc = canvas.getGraphicsContext2D();
 
         gc.drawImage(background, 0, 0);
-
-        controller = new Controller(this, doodleImage, platformImage);
+        controller = new Controller(this);
 
         keys = controller.getInput();
-
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -314,12 +314,11 @@ public class Main extends Application {
     }
 
     private void restartGame() {
-        controller = new Controller(this, doodleImage, platformImage);
+        controller = new Controller(this);
         keys = controller.getInput();
     }
 
     public static void main(String[] args) {
         launch(args);
     }
-
 }

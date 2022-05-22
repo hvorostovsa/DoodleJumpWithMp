@@ -1,4 +1,4 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.model.platform;
 
 import javafx.scene.image.Image;
 

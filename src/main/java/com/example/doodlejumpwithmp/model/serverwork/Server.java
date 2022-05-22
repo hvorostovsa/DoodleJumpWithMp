@@ -1,4 +1,4 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.model.serverwork;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -34,7 +34,7 @@ public class Server {
 }
 
 class ServerCell extends Thread {
-    private Socket socket;
+    private final Socket socket;
     private final BufferedReader in;
     private final BufferedWriter out;
 

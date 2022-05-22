@@ -1,5 +1,7 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.model.doodle;
 
+import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.model.platform.Platform;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
@@ -46,9 +48,29 @@ public class Doodle {
         return difY;
     }
 
+    public void setDifY(double difY) {
+        this.difY = difY;
+    }
+
     public void setPosition(double x, double y) {
         coordinateX = x;
         coordinateY = y;
+    }
+
+    public double getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(double moveSpeed) {
+        this.moveSpeed = moveSpeed;
+    }
+
+    public int getMoveDirection() {
+        return moveDirection;
+    }
+
+    public void setMoveDirection(int moveDirection) {
+        this.moveDirection = moveDirection;
     }
 
     public Image getImage() {
@@ -72,7 +94,6 @@ public class Doodle {
     public void jump() {
         difY = -11;
     }
-
 
     public void moveY(ArrayList<Platform> platforms) {
         difY += 0.3;

@@ -1,4 +1,4 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.model.serverwork;
 
 import java.io.*;
 import java.net.Socket;
