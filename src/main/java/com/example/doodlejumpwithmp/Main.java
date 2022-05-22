@@ -31,8 +31,8 @@ public class Main extends Application {
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
-    private final StringBuilder inputIp = new StringBuilder("IP: ");
-    private final StringBuilder inputPort = new StringBuilder("Port: ");
+    private StringBuilder inputIp = new StringBuilder("IP: ");
+    private StringBuilder inputPort = new StringBuilder("Port: ");
 
     private String ip;
     private final static int MAX_NUM_IP = 15;
@@ -279,8 +279,15 @@ public class Main extends Application {
                     System.out.println(ip + " " + port);
                 } else if (controller.getIsServer() && secondGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
-                else if (smallGameButton.getBoundary().contains(event.getX(), event.getY()))
+                else if (smallGameButton.getBoundary().contains(event.getX(), event.getY())) {
+                    inputIp = new StringBuilder("IP: ");
+                    inputPort = new StringBuilder("Port: ");
+
+                    ip = null;
+                    port = null;
+
                     screenMode = ScreenMode.CONNECTION_MENU;
+                }
             }
         });
 
@@ -293,17 +300,16 @@ public class Main extends Application {
                         if (event.getCode().isDigitKey()) inputIp.append(code.substring(code.length() - 1));
                         if (code.equals("PERIOD")) inputIp.append(".");
                     }
-                    if (code.equals("BACK_SPACE") && inputIp.length() != 0) {
+                    if (code.equals("BACK_SPACE") && inputIp.length() > 4) {
                         inputIp.delete(inputIp.length() - 1, inputIp.length());
                     }
                 }
 
                 if (portIsActive) {
-                    if (event.getCode().isDigitKey() && inputPort.length() < MAX_NUM_PORT + 6) {
+                    if (event.getCode().isDigitKey() && inputPort.length() < MAX_NUM_PORT + 6)
                         inputPort.append(code.substring(code.length() - 1));
-                        if (code.equals("BACK_SPACE") && inputPort.length() != 0)
-                            inputPort.delete(inputPort.length() - 1, inputPort.length());
-                    }
+                    if (code.equals("BACK_SPACE") && inputPort.length() > 6)
+                        inputPort.delete(inputPort.length() - 1, inputPort.length());
                 }
             }
 
