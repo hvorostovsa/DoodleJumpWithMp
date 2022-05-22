@@ -250,22 +250,24 @@ public class Main extends Application {
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
-
+            System.out.println(code);
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
                 if (IPActive) {
-                    if (event.getCode().isDigitKey()) {
-                        inputIP.append(code.substring(code.length() - 1));
+                    if (inputIP.length() < 15) {
+                        if (event.getCode().isDigitKey()) inputIP.append(code.substring(code.length() - 1));
+                        if (code.equals("PERIOD")) inputIP.append(".");
+
                     }
-                    if (code.equals("BACK_SPACE")) {
+                    if (code.equals("BACK_SPACE") && inputIP.length() != 0) {
                         inputIP.delete(inputIP.length() - 1, inputIP.length());
                     }
                 }
 
                 if (PortActive) {
-                    if (event.getCode().isDigitKey()) {
+                    if (event.getCode().isDigitKey() && inputPort.length() < 5) {
                         inputPort.append(code.substring(code.length() - 1));
                     }
-                    if (code.equals("BACK_SPACE")) {
+                    if (code.equals("BACK_SPACE") && inputPort.length() != 0) {
                         inputPort.delete(inputPort.length() - 1, inputPort.length());
                     }
                 }
