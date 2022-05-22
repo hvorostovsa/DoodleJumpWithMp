@@ -182,9 +182,11 @@ public class Main extends Application {
         String port = inputPort.toString();
 
         ipTextField = new MenuTextField(gc);
+        ipTextField.setSelected(ipIsActive);
         ipTextField.createTextField(50, 150, ip);
 
         portTextField = new MenuTextField(gc);
+        portTextField.setSelected(portIsActive);
         portTextField.createTextField(50, 300, port);
 
         firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);

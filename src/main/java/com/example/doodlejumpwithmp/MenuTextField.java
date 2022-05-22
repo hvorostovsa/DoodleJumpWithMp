@@ -7,17 +7,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class MenuTextField {
-    private final static int TEXT_FIELD_WIDTH = 350;
-    private final static int TEXT_FIELD_HEIGHT = 110;
+    private final static double TEXT_FIELD_WIDTH = 350;
+    private final static double TEXT_FIELD_HEIGHT = 110;
 
     private double coordinateX;
     private double coordinateY;
 
     private String text;
     private final GraphicsContext gc;
+    private boolean isSelected;
 
     static Image textFieldImage = new Image(
             Main.getFilePathFromResources("Nice_TextField.png"),
+            TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT, false, false
+    );
+    static Image textFieldSelectedImage = new Image(
+            Main.getFilePathFromResources("Selected_Text_Field.png"),
             TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT, false, false
     );
 
@@ -30,8 +35,8 @@ public class MenuTextField {
 
         coordinateX = x;
         coordinateY = y;
-
-        gc.drawImage(textFieldImage, x, y);
+        if (isSelected) gc.drawImage(textFieldSelectedImage, x, y);
+        else gc.drawImage(textFieldImage, x, y);
         Font font = new Font("Times New Roman", 18);
         gc.setFont(font);
         gc.setFill(Color.DARKBLUE);
@@ -39,8 +44,16 @@ public class MenuTextField {
 
     }
 
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
+
     public ImageView getBoundary() {
-        ImageView iv = new ImageView(textFieldImage);
+        ImageView iv;
+
+        if (isSelected) iv = new ImageView(textFieldSelectedImage);
+        else iv = new ImageView(textFieldImage);
+
         iv.setX(coordinateX);
         iv.setY(coordinateY);
         return iv;
