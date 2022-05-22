@@ -254,13 +254,15 @@ public class Main extends Application {
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
-
+            System.out.println(code);
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
                 if (ipActive) {
-                    if (event.getCode().isDigitKey()) {
-                        inputIp.append(code.substring(code.length() - 1));
+                    if (inputIp.length() < 15) {
+                        if (event.getCode().isDigitKey()) inputIp.append(code.substring(code.length() - 1));
+                        if (code.equals("PERIOD")) inputIp.append(".");
+
                     }
-                    if (code.equals("BACK_SPACE")) {
+                    if (code.equals("BACK_SPACE") && inputIp.length() != 0) {
                         inputIp.delete(inputIp.length() - 1, inputIp.length());
                     }
                 }
@@ -268,8 +270,7 @@ public class Main extends Application {
                 if (portActive) {
                     if (event.getCode().isDigitKey()) {
                         inputPort.append(code.substring(code.length() - 1));
-                    }
-                    if (code.equals("BACK_SPACE")) {
+                    if (code.equals("BACK_SPACE") && inputPort.length() != 0)
                         inputPort.delete(inputPort.length() - 1, inputPort.length());
                     }
                 }
