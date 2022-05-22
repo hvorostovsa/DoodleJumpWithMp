@@ -38,7 +38,7 @@ public class MenuButton {
         coordinateCenterY = y + radiusY;
 
         gc.drawImage(menuButtonImage, x, y);
-        Font font = new Font("Shlapak Script", 24);
+        Font font = new Font("Times New Roman", 18);
         gc.setFont(font);
         gc.fillText(buttonText, coordinateCenterX - buttonText.length() * 4, coordinateCenterY);
 
