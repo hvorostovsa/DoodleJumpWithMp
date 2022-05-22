@@ -46,6 +46,7 @@ public class Main extends Application {
     private static MenuTextField portTextField;
     private boolean portActive = false;
     private static MenuButton submitButton;
+    private static MenuButton startButton;
 
     static Image background = new Image(
             getFilePathFromResources("background.png"),
@@ -152,6 +153,7 @@ public class Main extends Application {
 
     private void runConnectingMenu() {
         setText("Press ESCAPE to return start menu", 50, 550);
+        gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 20, 20);
         serverRoomButton = new MenuButton(gc, "Create Room");
         clientRoomButton = new MenuButton(gc, "Find Room");
@@ -170,7 +172,11 @@ public class Main extends Application {
         portTextField = new MenuTextField(gc);
         portTextField.createTextField(50, 350, port);
         submitButton = new MenuButton(gc, "Submit");
-        submitButton.createOnPosition(150, 500);
+        submitButton.createOnPosition(100, 500);
+        if (controller.getIsServer()) {
+           startButton = new MenuButton(gc, "Start");
+           startButton.createOnPosition(250, 500);
+        }
     }
 
     private void openConnectionSettings() {
@@ -243,18 +249,15 @@ public class Main extends Application {
                 if (submitButton.getBoundary().contains(event.getX(), event.getY())) {
                     ip = inputIp.toString();
                     port = inputPort.toString();
-                    if (controller.getIsServer()) {
-                        // pass
-                    }
                     System.out.println(ip + " " + port);
-                    screenMode = ScreenMode.MULTIPLAYER_GAME;
                 }
+                if (controller.getIsServer() && startButton.getBoundary().contains(event.getX(), event.getY()))
+                    screenMode = ScreenMode.MULTIPLAYER_GAME;
             }
         });
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
-            System.out.println(code);
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
                 if (ipActive) {
                     if (inputIp.length() < 15) {

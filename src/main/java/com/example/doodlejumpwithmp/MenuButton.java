@@ -2,22 +2,23 @@ package com.example.doodlejumpwithmp;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Font;
 
 public class MenuButton {
     private final static int MENU_BUTTON_WIDTH = 150;
-    private final static int MENU_BUTTON_HEIGHT = 100;
+    private final static int MENU_BUTTON_HEIGHT = 50;
 
     private double coordinateCenterX;
     private double coordinateCenterY;
     private final String buttonText;
 
-    private final double radiusX;
-    private final double radiusY;
+//    private final double radiusX;
+//    private final double radiusY;
 
     static Image menuButtonImage = new Image(
-            Main.getFilePathFromResources("MenuButton.png"),
+            Main.getFilePathFromResources("Menu_Button.png"),
             MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT, false, false
     );
 
@@ -26,16 +27,12 @@ public class MenuButton {
     public MenuButton(GraphicsContext gc, String text) {
 
         this.buttonText = text;
-
-        this.radiusX = menuButtonImage.getWidth() / 2;
-        this.radiusY = menuButtonImage.getHeight() / 2;
-
         this.gc = gc;
     }
 
     public void createOnPosition(double x, double y) {
-        coordinateCenterX = x + radiusX;
-        coordinateCenterY = y + radiusY;
+        coordinateCenterX = x;
+        coordinateCenterY = y;
 
         gc.drawImage(menuButtonImage, x, y);
         Font font = new Font("Times New Roman", 18);
@@ -44,7 +41,10 @@ public class MenuButton {
 
     }
 
-    public Ellipse getBoundary() {
-        return new Ellipse(coordinateCenterX, coordinateCenterY, radiusX, radiusY);
+    public ImageView getBoundary() {
+        ImageView iv = new ImageView(menuButtonImage);
+        iv.setX(coordinateCenterX);
+        iv.setY(coordinateCenterY);
+        return iv;
     }
 }
