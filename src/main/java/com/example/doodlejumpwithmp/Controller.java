@@ -40,7 +40,7 @@ public class Controller {
         return isServer;
     }
 
-    public boolean ifFall() {
+    public boolean ifDoodleFall() {
         return gameOver;
     }
 

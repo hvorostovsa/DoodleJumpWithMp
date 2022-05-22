@@ -20,8 +20,8 @@ public class Main extends Application {
     private final static int SCREEN_WIDTH = 450;
     private final static int SCREEN_HEIGHT = 700;
 
-    private final static double MENU_BUTTON_WIDTH = 180;
-    private final static double SMALL_BUTTON_WIDTH = MENU_BUTTON_WIDTH / 2;
+    private final static double BUTTON_WIDTH = 180;
+    private final static double SMALL_BUTTON_WIDTH = BUTTON_WIDTH / 2;
 
     private final static int LOGO_WIDTH = 350;
     private final static int LOGO_HEIGHT = 250;
@@ -41,7 +41,7 @@ public class Main extends Application {
 
     private GraphicsContext gc;
     private Controller controller;
-    private ArrayList<String> keys;
+    private ArrayList<String> rightLeftListener;
     private ScreenMode screenMode = ScreenMode.START_MENU;
 
     private static MenuButton firstGameButton;
@@ -49,9 +49,9 @@ public class Main extends Application {
     private static MenuButton smallGameButton;
 
     private static MenuTextField ipTextField;
-    private boolean ipIsActive = false;
+    private boolean ipFieldIsActive = false;
     private static MenuTextField portTextField;
-    private boolean portIsActive = false;
+    private boolean portFieldIsActive = false;
 
     static Image background = new Image(
             getFilePathFromResources("background.png"),
@@ -120,10 +120,10 @@ public class Main extends Application {
         repaintScore();
         repaintDoodle(controller.getDoodle());
 
-        if (controller.ifFall()) {
+        if (controller.ifDoodleFall()) {
             gc.drawImage(logoImage, 50, 20);
-            firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
-            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+            firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
+            secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
 
             firstGameButton.createOnPosition(125, 300, "Restart");
             secondGameButton.createOnPosition(125, 450, "Exit to Main Menu");
@@ -153,8 +153,8 @@ public class Main extends Application {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 50, 20);
 
-        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
-        secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
+        secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
 
         firstGameButton.createOnPosition(125, 300, "Single Game");
         secondGameButton.createOnPosition(125, 450, "Multiplayer");
@@ -164,8 +164,8 @@ public class Main extends Application {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 50, 20);
 
-        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
-        secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
+        secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
         smallGameButton = new MenuButton(gc, SMALL_BUTTON_WIDTH);
 
         firstGameButton.createOnPosition(125, 300, "Create Room");
@@ -182,21 +182,21 @@ public class Main extends Application {
         String port = inputPort.toString();
 
         ipTextField = new MenuTextField(gc);
-        ipTextField.setSelected(ipIsActive);
+        ipTextField.setSelected(ipFieldIsActive);
         ipTextField.createTextField(50, 150, ip);
 
         portTextField = new MenuTextField(gc);
-        portTextField.setSelected(portIsActive);
+        portTextField.setSelected(portFieldIsActive);
         portTextField.createTextField(50, 300, port);
 
-        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
         smallGameButton = new MenuButton(gc, SMALL_BUTTON_WIDTH);
 
         firstGameButton.createOnPosition(50, 450, "Submit");
         smallGameButton.createOnPosition(180, 600, "Back");
 
         if (isServer) {
-            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+            secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
             secondGameButton.createOnPosition(250, 450, "Start");
         }
     }
@@ -227,7 +227,7 @@ public class Main extends Application {
         gc.drawImage(background, 0, 0);
         controller = new Controller(this);
 
-        keys = controller.getInput();
+        rightLeftListener = controller.getInput();
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -268,14 +268,14 @@ public class Main extends Application {
 
             } else {
                 if (ipTextField.getBoundary().contains(event.getX(), event.getY())) {
-                    ipIsActive = true;
-                    portIsActive = false;
+                    ipFieldIsActive = true;
+                    portFieldIsActive = false;
                 } else if (portTextField.getBoundary().contains(event.getX(), event.getY())) {
-                    ipIsActive = false;
-                    portIsActive = true;
+                    ipFieldIsActive = false;
+                    portFieldIsActive = true;
                 } else {
-                    ipIsActive = false;
-                    portIsActive = false;
+                    ipFieldIsActive = false;
+                    portFieldIsActive = false;
                 }
                 if ((firstGameButton.getBoundary().contains(event.getX(), event.getY()))) {
                     ip = inputIp.substring(4);
@@ -299,7 +299,7 @@ public class Main extends Application {
             String code = event.getCode().toString();
 
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
-                if (ipIsActive) {
+                if (ipFieldIsActive) {
                     if (inputIp.length() < MAX_NUM_IP + 4) {
                         if (event.getCode().isDigitKey()) inputIp.append(code.substring(code.length() - 1));
                         if (code.equals("PERIOD")) inputIp.append(".");
@@ -309,7 +309,7 @@ public class Main extends Application {
                     }
                 }
 
-                if (portIsActive) {
+                if (portFieldIsActive) {
                     if (event.getCode().isDigitKey() && inputPort.length() < MAX_NUM_PORT + 6)
                         inputPort.append(code.substring(code.length() - 1));
                     if (code.equals("BACK_SPACE") && inputPort.length() > 6)
@@ -320,8 +320,8 @@ public class Main extends Application {
             if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 if (code.equals("RIGHT") || code.equals("LEFT")) {
                     direction = code;
-                    if (!keys.contains(code)) {
-                        keys.add(code);
+                    if (!rightLeftListener.contains(code)) {
+                        rightLeftListener.add(code);
                     }
                 }
             }
@@ -331,7 +331,7 @@ public class Main extends Application {
             if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 String code = event.getCode().toString();
                 if (code.equals("RIGHT") || code.equals("LEFT"))
-                    keys.remove(code);
+                    rightLeftListener.remove(code);
             }
         });
 
@@ -341,7 +341,7 @@ public class Main extends Application {
 
     private void restartGame() {
         controller = new Controller(this);
-        keys = controller.getInput();
+        rightLeftListener = controller.getInput();
     }
 
     public static void main(String[] args) {
