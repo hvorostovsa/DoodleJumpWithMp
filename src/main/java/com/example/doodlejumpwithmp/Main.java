@@ -36,7 +36,7 @@ public class Main extends Application {
     private Controller controller;
     private ArrayList<String> keys;
     private ScreenMode screenMode = ScreenMode.START_MENU;
-
+    // TODO replace with 3 button
     private static MenuButton singleGameButton;
     private static MenuButton multiplayerGameButton;
     private static MenuButton serverRoomButton;
@@ -114,7 +114,7 @@ public class Main extends Application {
 
         repaintScore(controller.getScoreString());
         repaintDoodle(controller.getDoodle());
-
+        // TODO add buttons instead of text
         if (controller.ifFall()) {
             setText("Game Over! Press Space to restart", 50, 300);
             setText("Or press Escape to return to main menu", 30, 320);
@@ -147,8 +147,8 @@ public class Main extends Application {
         gc.drawImage(logoImage, 20, 20);
         singleGameButton = new MenuButton(gc, "Single Game");
         multiplayerGameButton = new MenuButton(gc, "Multiplayer");
-        singleGameButton.createOnPosition(100, 250);
-        multiplayerGameButton.createOnPosition(190, 350);
+        singleGameButton.createOnPosition(125, 250);
+        multiplayerGameButton.createOnPosition(125, 400);
     }
 
     private void runConnectingMenu() {
@@ -157,8 +157,8 @@ public class Main extends Application {
         gc.drawImage(logoImage, 20, 20);
         serverRoomButton = new MenuButton(gc, "Create Room");
         clientRoomButton = new MenuButton(gc, "Find Room");
-        serverRoomButton.createOnPosition(100, 250);
-        clientRoomButton.createOnPosition(190, 350);
+        serverRoomButton.createOnPosition(125, 250);
+        clientRoomButton.createOnPosition(125, 400);
     }
 
     private void openConnectionSettings(boolean isServer) {
@@ -172,7 +172,7 @@ public class Main extends Application {
         portTextField = new MenuTextField(gc);
         portTextField.createTextField(50, 350, port);
         submitButton = new MenuButton(gc, "Submit");
-        submitButton.createOnPosition(100, 500);
+        submitButton.createOnPosition(50, 500);
         if (controller.getIsServer()) {
            startButton = new MenuButton(gc, "Start");
            startButton.createOnPosition(250, 500);
