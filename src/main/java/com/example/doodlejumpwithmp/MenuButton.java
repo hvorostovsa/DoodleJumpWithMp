@@ -7,43 +7,45 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class MenuButton {
-    private final static int MENU_BUTTON_WIDTH = 180;
-    private final static int MENU_BUTTON_HEIGHT = 120;
+    private final double width;
+    private final double height;
 
-    private double coordinaterX;
+    private double coordinateX;
     private double coordinateY;
-    private final String buttonText;
+    private String buttonText;
 
-//    private final double radiusX;
-//    private final double radiusY;
-
-    static Image menuButtonImage = new Image(
-            Main.getFilePathFromResources("Button_Mouth.png"),
-            MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT, false, false
-    );
+    private Image menuButtonImage;
 
     private final GraphicsContext gc;
 
-    public MenuButton(GraphicsContext gc, String text) {
+    public MenuButton(GraphicsContext gc, double width) {
+        this.width = width;
+        this.height = width / 1.5;
 
-        this.buttonText = text;
+        this.menuButtonImage = new Image(
+                Main.getFilePathFromResources("Button_Mouth.png"),
+                width, height, false, false
+        );
+
         this.gc = gc;
     }
 
-    public void createOnPosition(double x, double y) {
-        coordinaterX = x;
+    public void createOnPosition(double x, double y, String text) {
+
+        buttonText = text;
+        coordinateX = x;
         coordinateY = y;
 
         gc.drawImage(menuButtonImage, x, y);
         Font font = new Font("Times New Roman", 18);
         gc.setFont(font);
         gc.setFill(Color.WHITE);
-        gc.fillText(buttonText, (x + MENU_BUTTON_WIDTH / 2) - buttonText.length() * 4, y + MENU_BUTTON_HEIGHT / 2 + 10);
+        gc.fillText(buttonText, (x + width / 2) - buttonText.length() * 4, y + height / 2 + 10);
     }
 
     public ImageView getBoundary() {
         ImageView iv = new ImageView(menuButtonImage);
-        iv.setX(coordinaterX);
+        iv.setX(coordinateX);
         iv.setY(coordinateY);
         return iv;
     }

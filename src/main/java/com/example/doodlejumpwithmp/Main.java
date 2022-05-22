@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -18,35 +19,39 @@ import java.util.ArrayList;
 public class Main extends Application {
     private final static int SCREEN_WIDTH = 450;
     private final static int SCREEN_HEIGHT = 700;
-    private final static int LOGO_WIDTH = 400;
-    private final static int LOGO_HEIGHT = 100;
+
+    private final static double MENU_BUTTON_WIDTH = 180;
+    private final static double SMALL_BUTTON_WIDTH = MENU_BUTTON_WIDTH / 2;
+
+    private final static int LOGO_WIDTH = 350;
+    private final static int LOGO_HEIGHT = 250;
 
     private String direction = "RIGHT";
 
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
-    private final StringBuilder inputIp = new StringBuilder();
-    private final StringBuilder inputPort = new StringBuilder();
+    private final StringBuilder inputIp = new StringBuilder("IP: ");
+    private final StringBuilder inputPort = new StringBuilder("Port: ");
 
     private String ip;
+    private final static int MAX_NUM_IP = 15;
     private String port;
+    private final static int MAX_NUM_PORT = 5;
 
     private GraphicsContext gc;
     private Controller controller;
     private ArrayList<String> keys;
     private ScreenMode screenMode = ScreenMode.START_MENU;
-    // TODO replace with 3 button
-    private static MenuButton singleGameButton;
-    private static MenuButton multiplayerGameButton;
-    private static MenuButton serverRoomButton;
-    private static MenuButton clientRoomButton;
+
+    private static MenuButton firstGameButton;
+    private static MenuButton secondGameButton;
+    private static MenuButton smallGameButton;
+
     private static MenuTextField ipTextField;
-    private boolean ipActive = false;
+    private boolean ipIsActive = false;
     private static MenuTextField portTextField;
-    private boolean portActive = false;
-    private static MenuButton submitButton;
-    private static MenuButton startButton;
+    private boolean portIsActive = false;
 
     static Image background = new Image(
             getFilePathFromResources("background.png"),
@@ -112,12 +117,16 @@ public class Main extends Application {
             repaintPlatforms(platform);
         }
 
-        repaintScore(controller.getScoreString());
+        repaintScore();
         repaintDoodle(controller.getDoodle());
         // TODO add buttons instead of text
         if (controller.ifFall()) {
-            setText("Game Over! Press Space to restart", 50, 300);
-            setText("Or press Escape to return to main menu", 30, 320);
+            gc.drawImage(logoImage, 50, 20);
+            firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+
+            firstGameButton.createOnPosition(125, 300, "Restart");
+            secondGameButton.createOnPosition(125, 450, "Exit to Main Menu");
         }
     }
 
@@ -136,46 +145,57 @@ public class Main extends Application {
         gc.drawImage(platform.getImage(), platform.getX(), platform.getY());
     }
 
-    private void repaintScore(String string) {
-        Font font = new Font("Times New Roman", 20);
-        gc.setFont(font);
-        gc.fillText(string, 20, 20);
+    private void repaintScore() {
+        setText(controller.getScoreString(), 20, 20, 20);
     }
 
     private void runStartingMenu() {
         gc.drawImage(background, 0, 0);
-        gc.drawImage(logoImage, 20, 20);
-        singleGameButton = new MenuButton(gc, "Single Game");
-        multiplayerGameButton = new MenuButton(gc, "Multiplayer");
-        singleGameButton.createOnPosition(125, 250);
-        multiplayerGameButton.createOnPosition(125, 400);
+        gc.drawImage(logoImage, 50, 20);
+
+        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+
+        firstGameButton.createOnPosition(125, 300, "Single Game");
+        secondGameButton.createOnPosition(125, 450, "Multiplayer");
     }
 
     private void runConnectingMenu() {
-        setText("Press ESCAPE to return start menu", 50, 550);
         gc.drawImage(background, 0, 0);
-        gc.drawImage(logoImage, 20, 20);
-        serverRoomButton = new MenuButton(gc, "Create Room");
-        clientRoomButton = new MenuButton(gc, "Find Room");
-        serverRoomButton.createOnPosition(125, 250);
-        clientRoomButton.createOnPosition(125, 400);
+        gc.drawImage(logoImage, 50, 20);
+
+        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        smallGameButton = new MenuButton(gc, SMALL_BUTTON_WIDTH);
+
+        firstGameButton.createOnPosition(125, 300, "Create Room");
+        secondGameButton.createOnPosition(125, 450, "Find Room");
+        smallGameButton.createOnPosition(250, 600, "Back");
     }
 
     private void openConnectionSettings(boolean isServer) {
         controller.setIsServer(isServer);
+
         gc.drawImage(background, 0, 0);
-        gc.drawImage(logoImage, 20, 20);
-        ipTextField = new MenuTextField(gc);
+
         String ip = inputIp.toString();
         String port = inputPort.toString();
-        ipTextField.createTextField(50, 300, ip);
+
+        ipTextField = new MenuTextField(gc);
+        ipTextField.createTextField(50, 150, ip);
+
         portTextField = new MenuTextField(gc);
-        portTextField.createTextField(50, 350, port);
-        submitButton = new MenuButton(gc, "Submit");
-        submitButton.createOnPosition(50, 500);
-        if (controller.getIsServer()) {
-           startButton = new MenuButton(gc, "Start");
-           startButton.createOnPosition(250, 500);
+        portTextField.createTextField(50, 300, port);
+
+        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        smallGameButton = new MenuButton(gc, SMALL_BUTTON_WIDTH);
+
+        firstGameButton.createOnPosition(50, 450, "Submit");
+        smallGameButton.createOnPosition(180, 600, "Back");
+
+        if (isServer) {
+            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+            secondGameButton.createOnPosition(250, 450, "Start");
         }
     }
 
@@ -183,9 +203,10 @@ public class Main extends Application {
         openConnectionSettings(false);
     }
 
-    private void setText(String string, double x, double y) {
-        Font font = new Font("Times New Roman", 25);
+    private void setText(String string, double x, double y, int size) {
+        Font font = new Font("Times New Roman", size);
         gc.setFont(font);
+        gc.setFill(Color.BLACK);
         gc.fillText(string, x, y);
     }
 
@@ -222,59 +243,66 @@ public class Main extends Application {
         timer.start();
 
         scene.setOnMouseClicked(event -> {
+
             if (screenMode == ScreenMode.START_MENU) {
-                if (singleGameButton.getBoundary().contains(event.getX(), event.getY()))
+                if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.SINGLE_GAME;
-                if (multiplayerGameButton.getBoundary().contains(event.getX(), event.getY()))
+                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CONNECTION_MENU;
             } else if (screenMode == ScreenMode.CONNECTION_MENU) {
-                if (serverRoomButton.getBoundary().contains(event.getX(), event.getY())) {
+                if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.SERVER_ROOM;
-                }
-                if (clientRoomButton.getBoundary().contains(event.getX(), event.getY()))
+                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CLIENT_ROOM;
+                else if (smallGameButton.getBoundary().contains(event.getX(), event.getY()))
+                    screenMode = ScreenMode.START_MENU;
             } else if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
-                // TODO add restart button when doodle fall
+                if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
+                    restartGame();
+                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
+                    screenMode = ScreenMode.START_MENU;
+                restartGame();
             } else {
                 if (ipTextField.getBoundary().contains(event.getX(), event.getY())) {
-                    ipActive = true;
-                    portActive = false;
+                    ipIsActive = true;
+                    portIsActive = false;
                 } else if (portTextField.getBoundary().contains(event.getX(), event.getY())) {
-                    ipActive = false;
-                    portActive = true;
+                    ipIsActive = false;
+                    portIsActive = true;
                 } else {
-                    ipActive = false;
-                    portActive = false;
+                    ipIsActive = false;
+                    portIsActive = false;
                 }
-                if (submitButton.getBoundary().contains(event.getX(), event.getY())) {
-                    ip = inputIp.toString();
-                    port = inputPort.toString();
+                if ((firstGameButton.getBoundary().contains(event.getX(), event.getY()))) {
+                    ip = inputIp.substring(4);
+                    port = inputPort.substring(6);
                     System.out.println(ip + " " + port);
-                }
-                if (controller.getIsServer() && startButton.getBoundary().contains(event.getX(), event.getY()))
+                } else if (controller.getIsServer() && secondGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
+                else if (smallGameButton.getBoundary().contains(event.getX(), event.getY()))
+                    screenMode = ScreenMode.CONNECTION_MENU;
             }
         });
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
+
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
-                if (ipActive) {
-                    if (inputIp.length() < 15) {
+                if (ipIsActive) {
+                    if (inputIp.length() < MAX_NUM_IP + 4) {
                         if (event.getCode().isDigitKey()) inputIp.append(code.substring(code.length() - 1));
                         if (code.equals("PERIOD")) inputIp.append(".");
-
                     }
                     if (code.equals("BACK_SPACE") && inputIp.length() != 0) {
                         inputIp.delete(inputIp.length() - 1, inputIp.length());
                     }
                 }
 
-                if (portActive) {
-                    if (event.getCode().isDigitKey()) {
+                if (portIsActive) {
+                    if (event.getCode().isDigitKey() && inputPort.length() < MAX_NUM_PORT + 6) {
                         inputPort.append(code.substring(code.length() - 1));
-                    if (code.equals("BACK_SPACE") && inputPort.length() != 0)
-                        inputPort.delete(inputPort.length() - 1, inputPort.length());
+                        if (code.equals("BACK_SPACE") && inputPort.length() != 0)
+                            inputPort.delete(inputPort.length() - 1, inputPort.length());
                     }
                 }
             }
@@ -286,23 +314,15 @@ public class Main extends Application {
                         keys.add(code);
                     }
                 }
-                if (controller.ifFall()) {
-                    if (code.equals("SPACE")) restartGame();
-                    if (code.equals("ESCAPE")) {
-                        screenMode = ScreenMode.START_MENU;
-                        restartGame();
-                    }
-                }
-            } else if (code.equals("ESCAPE")) {
-                screenMode = ScreenMode.START_MENU;
-                restartGame();
             }
         });
 
         scene.setOnKeyReleased(event -> {
-            String code = event.getCode().toString();
-            if (code.equals("RIGHT") || code.equals("LEFT"))
-                keys.remove(code);
+            if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
+                String code = event.getCode().toString();
+                if (code.equals("RIGHT") || code.equals("LEFT"))
+                    keys.remove(code);
+            }
         });
 
         stage.show();

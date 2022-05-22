@@ -1,12 +1,14 @@
 package com.example.doodlejumpwithmp;
 
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class MenuTextField {
     private final static int TEXT_FIELD_WIDTH = 350;
-    private final static int TEXT_FIELD_HEIGHT = 20;
+    private final static int TEXT_FIELD_HEIGHT = 110;
 
     private double coordinateX;
     private double coordinateY;
@@ -15,7 +17,7 @@ public class MenuTextField {
     private final GraphicsContext gc;
 
     static Image textFieldImage = new Image(
-            Main.getFilePathFromResources("Text_Field.png"),
+            Main.getFilePathFromResources("Nice_TextField.png"),
             TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT, false, false
     );
 
@@ -30,12 +32,18 @@ public class MenuTextField {
         coordinateY = y;
 
         gc.drawImage(textFieldImage, x, y);
-        gc.fillText(text, x + 10, y + 15);
+        Font font = new Font("Times New Roman", 18);
+        gc.setFont(font);
+        gc.setFill(Color.DARKBLUE);
+        gc.fillText(text, x + TEXT_FIELD_WIDTH / 2 - text.length() * 4, y + TEXT_FIELD_HEIGHT / 2 + 20);
 
     }
 
-    public Rectangle2D getBoundary() {
-        return new Rectangle2D(coordinateX, coordinateY, textFieldImage.getWidth(), textFieldImage.getHeight());
+    public ImageView getBoundary() {
+        ImageView iv = new ImageView(textFieldImage);
+        iv.setX(coordinateX);
+        iv.setY(coordinateY);
+        return iv;
     }
 
 }
