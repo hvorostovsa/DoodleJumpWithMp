@@ -259,7 +259,7 @@ public class Main extends Application {
                         serverPort = inputPort.toString();
                     }
                     System.out.println(serverIP + clientIP + serverPort + clientPort);
-                    //screenMode = ScreenMode.MULTIPLAYER_GAME;                }
+                    screenMode = ScreenMode.MULTIPLAYER_GAME;
                 }
             }
         });
