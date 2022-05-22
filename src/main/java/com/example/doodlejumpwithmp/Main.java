@@ -179,13 +179,6 @@ public class Main extends Application {
         String IP = inputIP.toString();
         String Port = inputPort.toString();
         IPTextField.createTextField(50, 300, IP);
-        if (mode.equals("Server")) {
-            serverIP = IP;
-            serverPort = Port;
-        } else {
-            clientIP = IP;
-            clientPort = Port;
-        }
         PortTextField = new MenuTextField(gc);
         PortTextField.createTextField(50, 350, Port);
         submitButton = new MenuButton(gc, "Submit");
@@ -221,7 +214,7 @@ public class Main extends Application {
             public void handle(long now) {
                 switch (screenMode) {
                     case SINGLE_GAME -> controller.update();
-                    case MULTIPLAYER_GAME -> controller.update();
+                    case MULTIPLAYER_GAME -> controller.update(); // TODO add second doodle
                     case START_MENU -> runStartingMenu();
                     case CONNECTION_MENU -> runConnectingMenu();
                     case SERVER_ROOM -> openConnectionSettings("Server");
@@ -243,10 +236,9 @@ public class Main extends Application {
                 }
                 if (clientRoomButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CLIENT_ROOM;
-            } else if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
-                if (submitButton.getBoundary().contains(event.getX(), event.getY()))
-                    //screenMode = ScreenMode.MULTIPLAYER_GAME;
-                    System.out.println(serverIP + " " + serverPort + " " + clientIP + " " + clientPort);
+            } else if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
+                // TODO add restart button when doodle fall
+            } else {
                 if (IPTextField.getBoundary().contains(event.getX(), event.getY())) {
                     IPActive = true;
                     PortActive = false;
@@ -256,6 +248,18 @@ public class Main extends Application {
                 } else {
                     IPActive = false;
                     PortActive = false;
+                }
+                if (submitButton.getBoundary().contains(event.getX(), event.getY())) {
+                    if (screenMode == ScreenMode.CLIENT_ROOM) {
+                        clientIP = inputIP.toString();
+                        clientPort = inputPort.toString();
+                    }
+                    if (screenMode == ScreenMode.SERVER_ROOM) {
+                        serverIP = inputIP.toString();
+                        serverPort = inputPort.toString();
+                    }
+                    System.out.println(serverIP + clientIP + serverPort + clientPort);
+                    //screenMode = ScreenMode.MULTIPLAYER_GAME;                }
                 }
             }
         });
