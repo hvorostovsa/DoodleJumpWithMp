@@ -30,10 +30,8 @@ public class Main extends Application {
     private final StringBuilder inputIP = new StringBuilder();
     private final StringBuilder inputPort = new StringBuilder();
 
-    private String serverIP;
-    private String serverPort;
-    private String clientIP;
-    private String clientPort;
+    private String IP;
+    private String Port;
 
     private GraphicsContext gc;
     private Controller controller;
@@ -102,20 +100,12 @@ public class Main extends Application {
     }
 
 
-    public String getServerIP() {
-        return serverIP;
+    public String getIP() {
+        return IP;
     }
 
-    public String getServerPort() {
-        return serverPort;
-    }
-
-    public String getClientIP() {
-        return clientIP;
-    }
-
-    public String getClientPort() {
-        return clientPort;
+    public String getPort() {
+        return Port;
     }
 
     public void repaintScene() {
@@ -250,15 +240,9 @@ public class Main extends Application {
                     PortActive = false;
                 }
                 if (submitButton.getBoundary().contains(event.getX(), event.getY())) {
-                    if (screenMode == ScreenMode.CLIENT_ROOM) {
-                        clientIP = inputIP.toString();
-                        clientPort = inputPort.toString();
-                    }
-                    if (screenMode == ScreenMode.SERVER_ROOM) {
-                        serverIP = inputIP.toString();
-                        serverPort = inputPort.toString();
-                    }
-                    System.out.println(serverIP + clientIP + serverPort + clientPort);
+                        IP = inputIP.toString();
+                        Port = inputPort.toString();
+                    System.out.println(IP + " " + Port);
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
                 }
             }
@@ -287,7 +271,7 @@ public class Main extends Application {
                 }
             }
 
-            if (screenMode == ScreenMode.SINGLE_GAME) {
+            if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 if (code.equals("RIGHT") || code.equals("LEFT")) {
                     direction = code;
                     if (!keys.contains(code)) {
