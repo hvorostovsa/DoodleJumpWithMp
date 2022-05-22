@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 public class MovingPlatform extends Platform {
     // FAbrickA was here...
     private final int SCREEN_WIDTH = Main.getScreenWidth();
-    private final int moveSpeed = 2;  // need to make correlation with the difficulty
+    private int moveSpeed = 2;
     private int moveDirection = 1;  // 1 - right; -1 - left
 
     public MovingPlatform(Image platformImage) {
@@ -25,6 +25,11 @@ public class MovingPlatform extends Platform {
             this.coordinateX = (SCREEN_WIDTH - getWidth()) - difference;
             moveDirection *= -1;
         }
+    }
+
+    public Platform returnWithNewSpeed(int moveSpeed) {
+        this.moveSpeed = moveSpeed;
+        return this;
     }
 
     @Override
