@@ -6,12 +6,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -29,6 +25,14 @@ public class Main extends Application {
     private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
     private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
+    private final StringBuilder inputIP = new StringBuilder();
+    private final StringBuilder inputPort = new StringBuilder();
+
+    private String serverIP;
+    private String serverPort;
+    private String clientIP;
+    private String clientPort;
+
     private GraphicsContext gc;
     private Controller controller;
     private ArrayList<String> keys;
@@ -38,6 +42,11 @@ public class Main extends Application {
     private static MenuButton multiplayerGameButton;
     private static MenuButton serverRoomButton;
     private static MenuButton clientRoomButton;
+    private static MenuTextField IPTextField;
+    private boolean IPActive = false;
+    private static MenuTextField PortTextField;
+    private boolean PortActive = false;
+    private static MenuButton submitButton;
 
     static Image background = new Image(
             getFilePathFromResources("background.png"),
@@ -91,6 +100,22 @@ public class Main extends Application {
     }
 
 
+    public String getServerIP() {
+        return serverIP;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public String getClientIP() {
+        return clientIP;
+    }
+
+    public String getClientPort() {
+        return clientPort;
+    }
+
     public void repaintScene() {
         gc.drawImage(background, 0, 0);
         for (Platform platform : controller.getPlatforms()) {
@@ -99,6 +124,11 @@ public class Main extends Application {
 
         repaintScore(controller.getScoreString());
         repaintDoodle(controller.getDoodle());
+
+        if (controller.ifFall()) {
+            setText("Game Over! Press Space to restart", 50, 300);
+            setText("Or press Escape to return to main menu", 30, 320);
+        }
     }
 
     private void repaintDoodle(Doodle doodle) {
@@ -132,7 +162,6 @@ public class Main extends Application {
     }
 
     private void runConnectingMenu() {
-        gc.drawImage(background, 0, 0);
         setText("Press ESCAPE to return start menu", 50, 550);
         gc.drawImage(logoImage, 20, 20);
         serverRoomButton = new MenuButton(gc, "Create Room");
@@ -141,49 +170,24 @@ public class Main extends Application {
         clientRoomButton.createOnPosition(190, 350);
     }
 
-    private void openConnectionSettings(Group root, AnimationTimer timer, String mode) {
-
-        timer.stop();
-
-        ImageView iv = new ImageView(background);
-
-        Text text = new Text();
-        if (mode.equals("Server")) text.setText("Everything is ready. Press F to start");
-        else if (mode.equals("Client")) text.setText("Everything is ready. Waiting for server");
-        Font font = new Font("Times New Roman", 15);
-        text.setFont(font);
-        text.setX(150);
-        text.setY(415);
-
-        Button submitButton = new Button("Submit");
-        submitButton.setTranslateX(50);
-        submitButton.setTranslateY(400);
-        submitButton.setPrefWidth(80);
-        submitButton.setPrefHeight(20);
-        submitButton.setOnAction(event -> {
-                    root.getChildren().remove(text);
-                    root.getChildren().add(text);
-                }
-        );
-
-        TextField tfID = new TextField("Enter Your ID here");
-        tfID.setTranslateX(50);
-        tfID.setTranslateY(300);
-        tfID.setPrefWidth(350);
-        tfID.setPrefHeight(20);
-
-        TextField tfPort = new TextField("Enter Your port here");
-        tfPort.setTranslateX(50);
-        tfPort.setTranslateY(350);
-        tfPort.setPrefWidth(350);
-        tfPort.setPrefHeight(20);
-
-        root.getChildren().clear();
-        root.getChildren().add(iv);
-        root.getChildren().add(submitButton);
-        root.getChildren().add(tfID);
-        root.getChildren().add(tfPort);
-
+    private void openConnectionSettings(String mode) {
+        gc.drawImage(background, 0, 0);
+        gc.drawImage(logoImage, 20, 20);
+        IPTextField = new MenuTextField(gc);
+        String IP = inputIP.toString();
+        String Port = inputPort.toString();
+        IPTextField.createTextField(50, 300, IP);
+        if (mode.equals("Server")) {
+            serverIP = IP;
+            serverPort = Port;
+        } else {
+            clientIP = IP;
+            clientPort = Port;
+        }
+        PortTextField = new MenuTextField(gc);
+        PortTextField.createTextField(50, 350, Port);
+        submitButton = new MenuButton(gc, "Submit");
+        submitButton.createOnPosition(150, 500);
     }
 
     private void setText(String string, double x, double y) {
@@ -205,6 +209,8 @@ public class Main extends Application {
         root.getChildren().add(canvas);
         this.gc = canvas.getGraphicsContext2D();
 
+        gc.drawImage(background, 0, 0);
+
         controller = new Controller(this, doodleImage, platformImage);
 
         keys = controller.getInput();
@@ -214,17 +220,12 @@ public class Main extends Application {
             @Override
             public void handle(long now) {
                 switch (screenMode) {
-                    case GAME -> {
-                        controller.update();
-                        if (controller.ifFall()) {
-                            setText("Game Over! Press Space to restart", 50, 300);
-                            setText("Or press Escape to return to main menu", 30, 320);
-                        }
-                    }
+                    case SINGLE_GAME -> controller.update();
+                    case MULTIPLAYER_GAME -> controller.update();
                     case START_MENU -> runStartingMenu();
                     case CONNECTION_MENU -> runConnectingMenu();
-                    case SERVER_ROOM -> openConnectionSettings(root, this, "Server");
-                    case CLIENT_ROOM -> openConnectionSettings(root, this, "Client");
+                    case SERVER_ROOM -> openConnectionSettings("Server");
+                    case CLIENT_ROOM -> openConnectionSettings("Client");
                 }
             }
         };
@@ -233,7 +234,7 @@ public class Main extends Application {
         scene.setOnMouseClicked(event -> {
             if (screenMode == ScreenMode.START_MENU) {
                 if (singleGameButton.getBoundary().contains(event.getX(), event.getY()))
-                    screenMode = ScreenMode.GAME;
+                    screenMode = ScreenMode.SINGLE_GAME;
                 if (multiplayerGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CONNECTION_MENU;
             } else if (screenMode == ScreenMode.CONNECTION_MENU) {
@@ -242,13 +243,47 @@ public class Main extends Application {
                 }
                 if (clientRoomButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CLIENT_ROOM;
+            } else if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
+                if (submitButton.getBoundary().contains(event.getX(), event.getY()))
+                    //screenMode = ScreenMode.MULTIPLAYER_GAME;
+                    System.out.println(serverIP + " " + serverPort + " " + clientIP + " " + clientPort);
+                if (IPTextField.getBoundary().contains(event.getX(), event.getY())) {
+                    IPActive = true;
+                    PortActive = false;
+                } else if (PortTextField.getBoundary().contains(event.getX(), event.getY())) {
+                    IPActive = false;
+                    PortActive = true;
+                } else {
+                    IPActive = false;
+                    PortActive = false;
+                }
             }
         });
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
 
-            if (screenMode == ScreenMode.GAME) {
+            if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
+                if (IPActive) {
+                    if (event.getCode().isDigitKey()) {
+                        inputIP.append(code.substring(code.length() - 1));
+                    }
+                    if (code.equals("BACK_SPACE")) {
+                        inputIP.delete(inputIP.length() - 1, inputIP.length());
+                    }
+                }
+
+                if (PortActive) {
+                    if (event.getCode().isDigitKey()) {
+                        inputPort.append(code.substring(code.length() - 1));
+                    }
+                    if (code.equals("BACK_SPACE")) {
+                        inputPort.delete(inputPort.length() - 1, inputPort.length());
+                    }
+                }
+            }
+
+            if (screenMode == ScreenMode.SINGLE_GAME) {
                 if (code.equals("RIGHT") || code.equals("LEFT")) {
                     direction = code;
                     if (!keys.contains(code)) {
@@ -265,17 +300,6 @@ public class Main extends Application {
             } else if (code.equals("ESCAPE")) {
                 screenMode = ScreenMode.START_MENU;
                 restartGame();
-            }
-
-            if (screenMode == ScreenMode.SERVER_ROOM) {
-                if (code.equals("F")) {
-                    screenMode = ScreenMode.GAME;
-                    System.out.println(1);
-                    root.getChildren().clear();
-                    root.getChildren().add(canvas);
-                    this.gc = canvas.getGraphicsContext2D();
-                    timer.start();
-                }
             }
         });
 
@@ -297,4 +321,5 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
 }
