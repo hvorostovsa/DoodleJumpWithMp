@@ -39,8 +39,10 @@ public class Main extends Application {
 
     private String ip;
     private final static int MAX_NUM_IP = 15;
+    private final static int UNCHANGEABLE_PART_IP = 4;
     private int port;
     private final static int MAX_NUM_PORT = 5;
+    private final static int UNCHANGEABLE_PART_PORT = 6;
 
     private GraphicsContext gc;
     private Controller controller;
@@ -387,19 +389,19 @@ public class Main extends Application {
 
             if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
                 if (ipFieldIsActive) {
-                    if (inputIp.length() < MAX_NUM_IP + 4) {
+                    if (inputIp.length() < MAX_NUM_IP + UNCHANGEABLE_PART_IP) {
                         if (event.getCode().isDigitKey()) inputIp.append(code.substring(code.length() - 1));
                         if (code.equals("PERIOD")) inputIp.append(".");
                     }
-                    if (code.equals("BACK_SPACE") && inputIp.length() > 4) {
+                    if (code.equals("BACK_SPACE") && inputIp.length() > UNCHANGEABLE_PART_IP) {
                         inputIp.delete(inputIp.length() - 1, inputIp.length());
                     }
                 }
 
                 if (portFieldIsActive) {
-                    if (event.getCode().isDigitKey() && inputPort.length() < MAX_NUM_PORT + 6)
+                    if (event.getCode().isDigitKey() && inputPort.length() < MAX_NUM_PORT + UNCHANGEABLE_PART_PORT)
                         inputPort.append(code.substring(code.length() - 1));
-                    if (code.equals("BACK_SPACE") && inputPort.length() > 6)
+                    if (code.equals("BACK_SPACE") && inputPort.length() > UNCHANGEABLE_PART_PORT)
                         inputPort.delete(inputPort.length() - 1, inputPort.length());
                 }
             }
