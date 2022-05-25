@@ -28,8 +28,16 @@ public class Doodle {
     private double coordinateY = 0;
     private double difY = 0;
     private boolean fall = false;
+    private boolean loose = false;
     private int doodleSide = 1; // 1 => doodle sees to the right side. -1 => doodle sees to the left side
 
+    public void setLoose(boolean loose) {
+        this.loose = loose;
+    }
+
+    public boolean getLoose() {
+        return this.loose;
+    }
 
     public double getX() {
         return coordinateX;
@@ -170,12 +178,16 @@ public class Doodle {
     public JSONObject collectData() {
         //  get pos, speed, loose, lastMove and put it into JSONObject
         JSONObject data = new JSONObject();
-        data.put("coordinateX", this.coordinateX);
-        data.put("coordinateY", this.coordinateY);
-        data.put("moveDirection", this.moveDirection);
-        data.put("moveSpeed", this.moveSpeed);
-        data.put("doodleSide", this.doodleSide);
-        data.put("difY", this.getDifY());
+        if (loose) {
+            data.put("loose", true);
+        } else {
+            data.put("coordinateX", this.coordinateX);
+            data.put("coordinateY", this.coordinateY);
+            data.put("moveDirection", this.moveDirection);
+            data.put("moveSpeed", this.moveSpeed);
+            data.put("doodleSide", this.doodleSide);
+            data.put("difY", this.getDifY());
+        }
         return data;
     }
 }

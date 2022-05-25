@@ -210,9 +210,16 @@ public class Controller {
             for (Platform platform: platforms) {
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
             }
-            if (platforms.get(0).getY() < -100) gameOver = true;
+            if (platforms.get(0).getY() < -100) makeGameOver();
         }
+    }
 
+    private void makeGameOver() {
+        gameOver = true;
+        doodle.setLoose(true);
+        for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
+            shadowDoodle.moveOutFromScreen();
+        }
     }
 
     private void updateCoordinateX() {
@@ -276,11 +283,13 @@ public class Controller {
     }
 
     public void updateShadowDoodles() {
-        for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
-            if (shadowDoodle.isOnScreen()) {
+        if (!gameOver) {
+            for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
+                if (shadowDoodle.isOnScreen() && !shadowDoodle.getLoose()) {
 //                System.out.println("Yes, on screen");
-                shadowDoodle.moveY(platforms);
-                shadowDoodle.moveX();
+                    shadowDoodle.moveY(platforms);
+                    shadowDoodle.moveX();
+                }
             }
         }
     }

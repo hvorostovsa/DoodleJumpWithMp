@@ -14,7 +14,6 @@ public class ShadowDoodle extends Doodle {
     // Other players will be shown as ShadowDoodle
 
     private int lastDirection = 0;
-    private boolean loose = false;
     private int clientId;
     private double score = 0.;
 
@@ -62,14 +61,6 @@ public class ShadowDoodle extends Doodle {
         return lastDirection;
     }
 
-    public void setLoose(boolean loose) {
-        this.loose = loose;
-    }
-
-    public boolean getLoose() {
-        return this.loose;
-    }
-
     public void moveX() {
         moveX(lastDirection);
     }
@@ -92,18 +83,29 @@ public class ShadowDoodle extends Doodle {
 //        System.out.println("x: " + getX() + ", y: " + getY());
         this.lastDataGot = data;
 
-        setX(data.getDouble("coordinateX"));
-        setY(data.getDouble("coordinateY"));
-        setMoveDirection(data.getIntValue("moveDirection"));
-        setLastDirection(getMoveDirection());
-        setMoveSpeed(data.getDouble("moveSpeed"));
-        setDoodleSide(data.getIntValue("doodleSide"));
-        setDifY(data.getDouble("difY"));
-        this.score = data.getDouble("score");
+        if (getLoose()) { // we don't need to update data if this doodle is looser
+            return;
+        }
+        if (data.containsKey("loose") && data.getBoolean("loose")) {
+            setLoose(true);
+        } else {
+            setX(data.getDouble("coordinateX"));
+            setY(data.getDouble("coordinateY"));
+            setMoveDirection(data.getIntValue("moveDirection"));
+            setLastDirection(getMoveDirection());
+            setMoveSpeed(data.getDouble("moveSpeed"));
+            setDoodleSide(data.getIntValue("doodleSide"));
+            setDifY(data.getDouble("difY"));
+            this.score = data.getDouble("score");
 
-        // set realY by scores' difference
-        double YOffset = this.score - score;
-        double realY = this.getY() - YOffset;
-        this.setY(realY);
+            // set realY by scores' difference
+            double YOffset = this.score - score;
+            double realY = this.getY() - YOffset;
+            this.setY(realY);
+        }
+    }
+
+    public void moveOutFromScreen() {
+        setX(-100 - getWidth());
     }
 }

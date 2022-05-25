@@ -58,6 +58,7 @@ public class Server extends Thread {
         this.port = port;
         this.server = new ServerSocket(port, 50, InetAddress.getByName(ip));
         connections.add(0); // server id;
+        this.setDaemon(true);
         this.start();
     }
 
@@ -133,6 +134,7 @@ class ServerCell extends Thread {
         this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        this.setDaemon(true);
         this.start();
     }
 
