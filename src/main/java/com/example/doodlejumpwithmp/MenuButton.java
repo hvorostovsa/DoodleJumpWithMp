@@ -23,7 +23,7 @@ public class MenuButton {
         this.height = width / 1.5;
 
         this.menuButtonImage = new Image(
-                Main.getFilePathFromResources("Button_Mouth.png"),
+                MainUtils.getFilePathFromResources("Button_Mouth.png"),
                 width, height, false, false
         );
 

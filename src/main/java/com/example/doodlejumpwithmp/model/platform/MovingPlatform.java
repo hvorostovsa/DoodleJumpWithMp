@@ -1,29 +1,28 @@
 package com.example.doodlejumpwithmp.model.platform;
 
 import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.model.Direction;
 import javafx.scene.image.Image;
 
 public class MovingPlatform extends Platform {
-    // FAbrickA was here...
-    private final int SCREEN_WIDTH = Main.getScreenWidth();
     private int moveSpeed = 2;
-    private int moveDirection = 1;  // 1 - right; -1 - left
+    private Direction moveDirection = Direction.RIGHT;  // 1 - right; -1 - left
 
     public MovingPlatform(Image platformImage) {
         super(platformImage);
     }
 
     private void move() {
-        this.coordinateX += moveDirection * moveSpeed;
+        this.coordinateX += moveDirection.getValue() * moveSpeed;
         double difference;
         if (this.coordinateX <= 0) {
             difference = coordinateX * -1;
             this.coordinateX = difference;
-            moveDirection *= -1;
-        } else if (this.coordinateX >= SCREEN_WIDTH - getWidth()) {
-            difference = this.coordinateX - (SCREEN_WIDTH - getWidth());
-            this.coordinateX = (SCREEN_WIDTH - getWidth()) - difference;
-            moveDirection *= -1;
+            moveDirection = moveDirection.getOpposite();
+        } else if (this.coordinateX >= Main.SCREEN_WIDTH - getWidth()) {
+            difference = this.coordinateX - (Main.SCREEN_WIDTH - getWidth());
+            this.coordinateX = (Main.SCREEN_WIDTH - getWidth()) - difference;
+            moveDirection = moveDirection.getOpposite();
         }
     }
 

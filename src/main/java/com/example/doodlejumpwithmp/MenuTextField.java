@@ -18,11 +18,11 @@ public class MenuTextField {
     private boolean isSelected;
 
     static Image textFieldImage = new Image(
-            Main.getFilePathFromResources("Nice_TextField.png"),
+            MainUtils.getFilePathFromResources("Nice_TextField.png"),
             TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT, false, false
     );
     static Image textFieldSelectedImage = new Image(
-            Main.getFilePathFromResources("Selected_Text_Field.png"),
+            MainUtils.getFilePathFromResources("Selected_Text_Field.png"),
             TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT, false, false
     );
 

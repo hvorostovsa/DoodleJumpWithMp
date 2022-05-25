@@ -1,19 +1,17 @@
 package com.example.doodlejumpwithmp.model.doodle;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
-import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class ShadowDoodle extends Doodle {
     // Other players will be shown as ShadowDoodle
 
-    private int lastDirection = 0;
+    private Direction lastDirection = Direction.NONE;
     private int clientId;
     private double score = 0.;
 
@@ -24,7 +22,7 @@ public class ShadowDoodle extends Doodle {
     }
 
     @Override
-    public void moveX(int newDirection) {
+    public void moveX(Direction newDirection) {
         if (isOnScreen()) {
             super.moveX(newDirection);
         }
@@ -53,11 +51,11 @@ public class ShadowDoodle extends Doodle {
         this.clientId = clientId;
     }
 
-    public void setLastDirection(int lastDirection) {
+    public void setLastDirection(Direction lastDirection) {
         this.lastDirection = lastDirection;
     }
 
-    public int getLastDirection() {
+    public Direction getLastDirection() {
         return lastDirection;
     }
 
@@ -66,7 +64,7 @@ public class ShadowDoodle extends Doodle {
     }
 
     public boolean isOnScreen() {
-        return -300 <= getY() && getY() <= Main.getScreenHeight() + 300;
+        return -300 <= getY() && getY() <= Main.SCREEN_HEIGHT + 300;
     }
 
     @Override
@@ -91,11 +89,11 @@ public class ShadowDoodle extends Doodle {
         } else {
             setX(data.getDouble("coordinateX"));
             setY(data.getDouble("coordinateY"));
-            setMoveDirection(data.getIntValue("moveDirection"));
+            setMoveDirection(Direction.getByValue(data.getIntValue("moveDirection")));
             setLastDirection(getMoveDirection());
             setMoveSpeed(data.getDouble("moveSpeed"));
-            setDoodleSide(data.getIntValue("doodleSide"));
-            setDifY(data.getDouble("difY"));
+            setDoodleSide(Direction.getByValue(data.getIntValue("doodleSide")));
+            setDiffY(data.getDouble("diffY"));
             this.score = data.getDouble("score");
 
             // set realY by scores' difference

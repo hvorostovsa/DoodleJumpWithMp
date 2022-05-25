@@ -2,6 +2,7 @@ package com.example.doodlejumpwithmp.model.doodle;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import javafx.scene.image.Image;
 
@@ -19,17 +20,17 @@ public class Doodle {
     private final int maxMoveSpeed = 7;
     private final int minMoveSpeed = 4;
     private final double acceleration = 0.5;
-    private int moveDirection = 0; // 0 - not moving; 1 - moving right; -1 - moving left
+    private Direction moveDirection = Direction.NONE; // 0 - not moving; 1 - moving right; -1 - moving left
     private double moveSpeed = 0;
 
     private final Image characterImage;
 
     private double coordinateX = 0;
     private double coordinateY = 0;
-    private double difY = 0;
+    private double diffY = 0;
     private boolean fall = false;
     private boolean loose = false;
-    private int doodleSide = 1; // 1 => doodle sees to the right side. -1 => doodle sees to the left side
+    private Direction doodleSide = Direction.RIGHT; // 1 => doodle sees to the right side. -1 => doodle sees to the left side
 
     public void setLoose(boolean loose) {
         this.loose = loose;
@@ -55,12 +56,12 @@ public class Doodle {
         this.coordinateX = coordinateX;
     }
 
-    public double getDifY() {
-        return difY;
+    public double getDiffY() {
+        return diffY;
     }
 
-    public void setDifY(double difY) {
-        this.difY = difY;
+    public void setDiffY(double diffY) {
+        this.diffY = diffY;
     }
 
     public void setPosition(double x, double y) {
@@ -76,19 +77,19 @@ public class Doodle {
         this.moveSpeed = moveSpeed;
     }
 
-    public int getMoveDirection() {
+    public Direction getMoveDirection() {
         return moveDirection;
     }
 
-    public void setMoveDirection(int moveDirection) {
+    public void setMoveDirection(Direction moveDirection) {
         this.moveDirection = moveDirection;
     }
 
-    public int getDoodleSide() {
+    public Direction getDoodleSide() {
         return doodleSide;
     }
 
-    public void setDoodleSide(int doodleSide) {
+    public void setDoodleSide(Direction doodleSide) {
         this.doodleSide = doodleSide;
     }
 
@@ -111,13 +112,13 @@ public class Doodle {
     }
 
     public void jump() {
-        difY = -11;
+        diffY = -11;
     }
 
     public void moveY(ArrayList<Platform> platforms) {
-        difY += 0.3;
-        coordinateY += difY;
-        fall = difY > 0;
+        diffY += 0.3;
+        coordinateY += diffY;
+        fall = diffY > 0;
         for (Platform platform : platforms) {
             if (fall && intersectPlatform(platform)) {
                 if (platform.canJumpToPlatform()) {
@@ -128,9 +129,9 @@ public class Doodle {
         }
     }
 
-    public void moveX(int newDirection) {
+    public void moveX(Direction newDirection) {
         // newDirection: 1 => move right, -1 => move left, 0 => no move
-        if (newDirection != 0) { // if need to move
+        if (newDirection != Direction.NONE) { // if need to move
             doodleSide = newDirection;
             if (newDirection == moveDirection) {
                 moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
@@ -138,8 +139,8 @@ public class Doodle {
                 moveSpeed = minMoveSpeed;
                 moveDirection = newDirection;
             }
-            coordinateX += moveDirection * moveSpeed;
-            if (moveDirection == 1) { // move right
+            coordinateX += moveDirection.getValue() * moveSpeed;
+            if (moveDirection == Direction.RIGHT) { // move right
                 indentLeftLeg = BASE_INDENT_LEFT_LEG;
                 indentRightLeg = BASE_INDENT_RIGHT_LEG;
             } else { // move left
@@ -158,9 +159,9 @@ public class Doodle {
         double difference;
         if (this.coordinateX + WIDTH < 0) {
             difference = -(this.coordinateX + WIDTH);
-            this.coordinateX = Main.getScreenWidth() - difference;
-        } else if (this.coordinateX > Main.getScreenWidth()) {
-            difference = this.coordinateX - Main.getScreenWidth();
+            this.coordinateX = Main.SCREEN_WIDTH - difference;
+        } else if (this.coordinateX > Main.SCREEN_WIDTH) {
+            difference = this.coordinateX - Main.SCREEN_WIDTH;
             this.coordinateX = difference - WIDTH;
         }
     }
@@ -183,10 +184,10 @@ public class Doodle {
         } else {
             data.put("coordinateX", this.coordinateX);
             data.put("coordinateY", this.coordinateY);
-            data.put("moveDirection", this.moveDirection);
+            data.put("moveDirection", this.moveDirection.getValue());
             data.put("moveSpeed", this.moveSpeed);
-            data.put("doodleSide", this.doodleSide);
-            data.put("difY", this.getDifY());
+            data.put("doodleSide", this.doodleSide.getValue());
+            data.put("diffY", this.getDiffY());
         }
         return data;
     }

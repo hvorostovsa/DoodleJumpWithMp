@@ -3,6 +3,7 @@ package com.example.doodlejumpwithmp;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.MovingPlatform;
@@ -35,7 +36,6 @@ public class Controller {
 
     public void setSeed(long seed) {
         random = new Random(seed);
-        System.out.println(random.nextLong());
     }
 
     public Map<Integer, ShadowDoodle> getShadowDoodles() {
@@ -84,7 +84,7 @@ public class Controller {
         this.isClient = isClient;
     }
 
-    public boolean ifDoodleFall() {
+    public boolean isDoodleFall() {
         return gameOver;
     }
 
@@ -99,11 +99,11 @@ public class Controller {
 
     public void initialGamePreparations() {
         Platform oldPlatform = new Platform(Main.platformImage);
-        oldPlatform.setPosition(185, Main.getScreenHeight() - 15);
+        oldPlatform.setPosition(185, Main.SCREEN_HEIGHT - 15);
         platforms.add(oldPlatform);
         doodle.setPosition(185, 560);
         double max = 0;
-        while (max < Main.getScreenHeight()) {
+        while (max < Main.SCREEN_HEIGHT) {
             Platform newPlatform = placePlatform(oldPlatform);
             platforms.add(newPlatform);
             max += (oldPlatform.getY() - newPlatform.getY());
@@ -132,7 +132,6 @@ public class Controller {
             newNumbers.set(i, currentNumber + newNumbers.get(i - 1));
         }
         double randomNumber = random.nextDouble() * sum;
-        System.out.println("randomNumber: " + randomNumber);
         int resultIndex = 0;
         while (randomNumber > newNumbers.get(resultIndex)) {
             resultIndex += 1;
@@ -163,7 +162,6 @@ public class Controller {
         };
         int nextInt1 = random.nextInt(380);
         int nextInt2 = random.nextInt(interval);
-        System.out.println("nextInt1: " + nextInt1 + ", nextInt2: " + nextInt2);
         platform.setPosition(nextInt1, previous.getY() - 10 - nextInt2);
         if (!platform.intersectPlatform(previous)) {
             return platform;
@@ -199,16 +197,16 @@ public class Controller {
         if (doodle.getY() < 300) {
             doodle.setY(300);
             for (Platform platform : platforms) {
-                platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
+                platform.setPosition(platform.getX(), platform.getY() - doodle.getDiffY());
             }
-            score += doodle.getDifY() * -1;
+            score += doodle.getDiffY() * -1;
             Platform oldPlatform = platforms.get(platforms.size() - 1);
             if (!containsPlatform(oldPlatform, 0, interval * (-2)))
                 platforms.add(placePlatform(oldPlatform));
-            if (platforms.get(0).getY() > Main.getScreenHeight()) platforms.remove(0);
-        }  else if (doodle.getY() > Main.getScreenHeight()) {
+            if (platforms.get(0).getY() > Main.SCREEN_HEIGHT) platforms.remove(0);
+        }  else if (doodle.getY() > Main.SCREEN_HEIGHT) {
             for (Platform platform: platforms) {
-                platform.setPosition(platform.getX(), platform.getY() - doodle.getDifY());
+                platform.setPosition(platform.getX(), platform.getY() - doodle.getDiffY());
             }
             if (platforms.get(0).getY() < -100) makeGameOver();
         }
@@ -225,14 +223,14 @@ public class Controller {
     private void updateCoordinateX() {
         if (input.contains("RIGHT")) {
             if (input.contains("LEFT")) {
-                doodle.moveX(0); // no move
+                doodle.moveX(Direction.NONE); // no move
             } else {
-                doodle.moveX(1); // move right
+                doodle.moveX(Direction.RIGHT); // move right
             }
         } else if (input.contains("LEFT")) {
-            doodle.moveX(-1); // move left
+            doodle.moveX(Direction.LEFT); // move left
         } else {
-            doodle.moveX(0); // no move
+            doodle.moveX(Direction.NONE); // no move
         }
     }
 

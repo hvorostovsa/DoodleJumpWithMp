@@ -1,6 +1,5 @@
 package com.example.doodlejumpwithmp;
 
-import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
@@ -15,7 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -28,8 +26,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class Main extends Application {
-    private final static int SCREEN_WIDTH = 450;
-    private final static int SCREEN_HEIGHT = 700;
+    public final static int SCREEN_WIDTH = 450;
+    public final static int SCREEN_HEIGHT = 700;
 
     private final static double MENU_BUTTON_WIDTH = 180;
     private final static double SMALL_BUTTON_WIDTH = MENU_BUTTON_WIDTH / 2;
@@ -38,9 +36,6 @@ public class Main extends Application {
     private final static int LOGO_HEIGHT = 250;
 
     private String direction = "RIGHT";
-
-    private static final String PACKAGE_NAME = Main.class.getPackage().getName(); // com.example.doodlejumpwithmp
-    private static final String RESOURCE_PREFIX = PACKAGE_NAME.replace(".", "/") + "/";
 
     private StringBuilder inputIp = new StringBuilder("IP: ");
     private StringBuilder inputPort = new StringBuilder("Port: ");
@@ -65,58 +60,37 @@ public class Main extends Application {
     private boolean portFieldIsActive = false;
 
     static Image background = new Image(
-            getFilePathFromResources("background.png"),
+            MainUtils.getFilePathFromResources("background.png"),
             SCREEN_WIDTH, SCREEN_HEIGHT, false, false
     );
     static Image platformImage = new Image(
-            getFilePathFromResources("Normal_platform.png"),
+            MainUtils.getFilePathFromResources("Normal_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
     static Image movingPlatformImage = new Image(
-            getFilePathFromResources("Moving_platform.png"),
+            MainUtils.getFilePathFromResources("Moving_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
     static Image oneJumpPlatformImage = new Image(
-            getFilePathFromResources("One_jump_platform.png"),
+            MainUtils.getFilePathFromResources("One_jump_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
     static Image zeroJumpPlatformImage = new Image(
-            getFilePathFromResources("Zero_jump_platform.png"),
+            MainUtils.getFilePathFromResources("Zero_jump_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
     static Image doodleImage = new Image(
-            getFilePathFromResources("Doodle.png"),
+            MainUtils.getFilePathFromResources("Doodle.png"),
             Doodle.getWidth(), Doodle.getHeight(), false, false
     );
     static Image shadowDoodleImage = new Image(
-            getFilePathFromResources("ShadowDoodle.png"),
+            MainUtils.getFilePathFromResources("ShadowDoodle.png"),
             ShadowDoodle.getWidth(), ShadowDoodle.getHeight(), false, false
     );
     static Image logoImage = new Image(
-            getFilePathFromResources("Logo.png"),
+            MainUtils.getFilePathFromResources("Logo.png"),
             LOGO_WIDTH, LOGO_HEIGHT, false, false
     );
-
-    public static String getFilePathFromResources(String filename) {
-        String filepath = filename.replace("\\", "/");
-        if (!filename.startsWith(RESOURCE_PREFIX)) {
-            filepath = RESOURCE_PREFIX + filepath;
-        }
-        URL url = Main.class.getClassLoader().getResource(filepath);
-        if (url == null) {
-            System.err.println("File \"" + filename + "\" not found"); // FileNotFoundException
-            System.exit(-1);
-        }
-        return url.toString();
-    }
-
-    public static int getScreenHeight() {
-        return SCREEN_HEIGHT;
-    }
-
-    public static int getScreenWidth() {
-        return SCREEN_WIDTH;
-    }
 
     public String getIp() {
         return ip;
@@ -136,7 +110,7 @@ public class Main extends Application {
         repaintShadowDoodles();
         repaintDoodle(controller.getDoodle());
         // TODO add buttons instead of text
-        if (controller.ifDoodleFall()) {
+        if (controller.isDoodleFall()) {
             gc.drawImage(logoImage, 50, 20);
             firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
             secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
@@ -159,7 +133,7 @@ public class Main extends Application {
 
     private void repaintShadowDoodles() {
         for (ShadowDoodle shadowDoodle: controller.getShadowDoodles().values()) {
-            switch (shadowDoodle.getDoodleSide()) {
+            switch (shadowDoodle.getDoodleSide().getValue()) { // ))
                 case 1 -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
                 case -1 -> gc.drawImage(
                         shadowDoodle.getImage(),
