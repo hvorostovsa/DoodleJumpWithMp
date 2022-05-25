@@ -343,8 +343,10 @@ public class Main extends Application {
         scene.setOnMouseClicked(event -> {
 
             if (screenMode == ScreenMode.START_MENU) {
-                if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
+                if (firstGameButton.getBoundary().contains(event.getX(), event.getY())) {
+                    controller.initialGamePreparations();
                     screenMode = ScreenMode.SINGLE_GAME;
+                }
                 else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CONNECTION_MENU;
             } else if (screenMode == ScreenMode.CONNECTION_MENU) {
