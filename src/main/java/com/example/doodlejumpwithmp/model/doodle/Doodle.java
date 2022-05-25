@@ -1,5 +1,6 @@
 package com.example.doodlejumpwithmp.model.doodle;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import javafx.scene.image.Image;
@@ -23,10 +24,12 @@ public class Doodle {
 
     private final Image characterImage;
 
-    private double coordinateX;
-    private double coordinateY;
+    private double coordinateX = 0;
+    private double coordinateY = 0;
     private double difY = 0;
     private boolean fall = false;
+    private int doodleSide = 1; // 1 => doodle sees to the right side. -1 => doodle sees to the left side
+
 
     public double getX() {
         return coordinateX;
@@ -73,6 +76,14 @@ public class Doodle {
         this.moveDirection = moveDirection;
     }
 
+    public int getDoodleSide() {
+        return doodleSide;
+    }
+
+    public void setDoodleSide(int doodleSide) {
+        this.doodleSide = doodleSide;
+    }
+
     public Image getImage() {
         return characterImage;
     }
@@ -112,6 +123,7 @@ public class Doodle {
     public void moveX(int newDirection) {
         // newDirection: 1 => move right, -1 => move left, 0 => no move
         if (newDirection != 0) { // if need to move
+            doodleSide = newDirection;
             if (newDirection == moveDirection) {
                 moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
             } else {
@@ -126,6 +138,8 @@ public class Doodle {
                 indentLeftLeg = BASE_INDENT_RIGHT_LEG;
                 indentRightLeg = BASE_INDENT_LEFT_LEG;
             }
+        } else {
+            moveDirection = newDirection;
         }
 
         cycleDoodle();
@@ -153,4 +167,15 @@ public class Doodle {
                         (rightLeg >= platform.getX() && rightLeg <= platformTopRightX));
     }
 
+    public JSONObject collectData() {
+        //  get pos, speed, loose, lastMove and put it into JSONObject
+        JSONObject data = new JSONObject();
+        data.put("coordinateX", this.coordinateX);
+        data.put("coordinateY", this.coordinateY);
+        data.put("moveDirection", this.moveDirection);
+        data.put("moveSpeed", this.moveSpeed);
+        data.put("doodleSide", this.doodleSide);
+        data.put("difY", this.getDifY());
+        return data;
+    }
 }

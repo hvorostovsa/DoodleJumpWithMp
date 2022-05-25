@@ -1,7 +1,13 @@
 package com.example.doodlejumpwithmp;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
+import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.Platform;
+import com.example.doodlejumpwithmp.model.serverwork.Client;
+import com.example.doodlejumpwithmp.model.serverwork.Server;
+import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -9,19 +15,24 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class Main extends Application {
     private final static int SCREEN_WIDTH = 450;
     private final static int SCREEN_HEIGHT = 700;
 
-    private final static double BUTTON_WIDTH = 180;
-    private final static double SMALL_BUTTON_WIDTH = BUTTON_WIDTH / 2;
+    private final static double MENU_BUTTON_WIDTH = 180;
+    private final static double SMALL_BUTTON_WIDTH = MENU_BUTTON_WIDTH / 2;
 
     private final static int LOGO_WIDTH = 350;
     private final static int LOGO_HEIGHT = 250;
@@ -36,7 +47,7 @@ public class Main extends Application {
 
     private String ip;
     private final static int MAX_NUM_IP = 15;
-    private String port;
+    private int port;
     private final static int MAX_NUM_PORT = 5;
 
     private GraphicsContext gc;
@@ -77,6 +88,10 @@ public class Main extends Application {
             getFilePathFromResources("Doodle.png"),
             Doodle.getWidth(), Doodle.getHeight(), false, false
     );
+    static Image shadowDoodleImage = new Image(
+            getFilePathFromResources("ShadowDoodle.png"),
+            ShadowDoodle.getWidth(), ShadowDoodle.getHeight(), false, false
+    );
     static Image logoImage = new Image(
             getFilePathFromResources("Logo.png"),
             LOGO_WIDTH, LOGO_HEIGHT, false, false
@@ -107,7 +122,7 @@ public class Main extends Application {
         return ip;
     }
 
-    public String getPort() {
+    public int getPort() {
         return port;
     }
 
@@ -118,12 +133,13 @@ public class Main extends Application {
         }
 
         repaintScore();
+        repaintShadowDoodles();
         repaintDoodle(controller.getDoodle());
-
+        // TODO add buttons instead of text
         if (controller.ifDoodleFall()) {
             gc.drawImage(logoImage, 50, 20);
-            firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
-            secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
+            firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
 
             firstGameButton.createOnPosition(125, 300, "Restart");
             secondGameButton.createOnPosition(125, 450, "Exit to Main Menu");
@@ -141,6 +157,20 @@ public class Main extends Application {
             );
     }
 
+    private void repaintShadowDoodles() {
+        for (ShadowDoodle shadowDoodle: controller.getShadowDoodles().values()) {
+            switch (shadowDoodle.getDoodleSide()) {
+                case 1 -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
+                case -1 -> gc.drawImage(
+                        shadowDoodle.getImage(),
+                        shadowDoodle.getX() + shadowDoodle.getImage().getWidth(), shadowDoodle.getY(),
+                        -1 * shadowDoodle.getImage().getWidth(), shadowDoodle.getImage().getHeight()
+                );
+                default -> throw new IllegalStateException("Unexpected value: " + shadowDoodle.getDoodleSide());
+            }
+        }
+    }
+
     private void repaintPlatforms(Platform platform) {
         gc.drawImage(platform.getImage(), platform.getX(), platform.getY());
     }
@@ -153,8 +183,8 @@ public class Main extends Application {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 50, 20);
 
-        firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
-        secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
+        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
 
         firstGameButton.createOnPosition(125, 300, "Single Game");
         secondGameButton.createOnPosition(125, 450, "Multiplayer");
@@ -164,8 +194,8 @@ public class Main extends Application {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 50, 20);
 
-        firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
-        secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
+        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+        secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
         smallGameButton = new MenuButton(gc, SMALL_BUTTON_WIDTH);
 
         firstGameButton.createOnPosition(125, 300, "Create Room");
@@ -175,6 +205,7 @@ public class Main extends Application {
 
     private void openConnectionSettings(boolean isServer) {
         controller.setIsServer(isServer);
+        controller.setIsClient(!isServer);
 
         gc.drawImage(background, 0, 0);
 
@@ -189,20 +220,85 @@ public class Main extends Application {
         portTextField.setSelected(portFieldIsActive);
         portTextField.createTextField(50, 300, port);
 
-        firstGameButton = new MenuButton(gc, BUTTON_WIDTH);
+        firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
         smallGameButton = new MenuButton(gc, SMALL_BUTTON_WIDTH);
 
         firstGameButton.createOnPosition(50, 450, "Submit");
         smallGameButton.createOnPosition(180, 600, "Back");
 
         if (isServer) {
-            secondGameButton = new MenuButton(gc, BUTTON_WIDTH);
+            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
             secondGameButton.createOnPosition(250, 450, "Start");
+            beforeStartServerWork();
+        } else {
+            beforeStartClientWork();
         }
     }
 
     private void openConnectionSettings() {
         openConnectionSettings(false);
+    }
+
+    private void beforeStartServerWork() {
+        Server server = controller.getServer();
+        if (server != null) {
+            LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
+            JSONObject response;
+            while (receivedRequests.size() > 0) {
+                response = receivedRequests.pop();
+                int code = response.getIntValue("code");
+                ServerKey serverKey = ServerKey.getKeyByCode(code);
+                switch (serverKey) {
+                    case CONNECTED -> {
+                        int newClientId = response.getIntValue("clientId");
+                        controller.addShadowDoodle(newClientId);
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + serverKey);
+                }
+            }
+        }
+    }
+
+    private void beforeStartClientWork() {
+        Client client = controller.getClient();
+        if (client != null) {
+            LinkedList<JSONObject> receivedRequests = client.getReceivedRequests();
+            JSONObject response;
+            boolean gameStarted = false;
+            while (receivedRequests.size() > 0) {
+                if (gameStarted) {
+                    break;
+                }
+                response = receivedRequests.pop();
+                int code = response.getIntValue("code");
+                ServerKey serverKey = ServerKey.getKeyByCode(code);
+                switch (serverKey) {
+                    case SET_ID -> {
+                        int clientId = response.getIntValue("newId");
+                        client.setClientId(clientId);
+                        Integer[] connections = response.getJSONArray("connections").toArray(Integer[]::new);
+                        List<Integer> list = Stream.of(connections).filter(it -> it != clientId).toList();
+                        client.getConnections().addAll(list);
+                        for (Integer id: list) {
+                            controller.addShadowDoodle(id);
+                        }
+                    }
+                    case NEW_USER_ADDED -> {
+                        int newClientId = response.getIntValue("clientId");
+                        controller.addShadowDoodle(newClientId);
+                    }
+                    case START_GAME -> {
+                        gameStarted = true;
+                        long seed = response.getLong("seed");
+                        System.out.println("Seed: " + seed);
+                        controller.setSeed(seed);
+                        controller.initialGamePreparations();
+                        screenMode = ScreenMode.MULTIPLAYER_GAME;
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + serverKey);
+                }
+            }
+        }
     }
 
     private void setText(String string, double x, double y, int size) {
@@ -279,16 +375,33 @@ public class Main extends Application {
                 }
                 if ((firstGameButton.getBoundary().contains(event.getX(), event.getY()))) {
                     ip = inputIp.substring(4);
-                    port = inputPort.substring(6);
-                    System.out.println(ip + " " + port);
-                } else if (controller.getIsServer() && secondGameButton.getBoundary().contains(event.getX(), event.getY()))
+                    port = Integer.parseInt(inputPort.substring(6));
+                    System.out.println(ip + ":" + port);
+                    if (controller.getIsServer()) { // user is server
+                        createServer();
+                    } else { // user is client
+                        createClient();
+                    }
+                } else if ((controller.getIsServer()) && secondGameButton.getBoundary().contains(event.getX(), event.getY())) {
+                    if (controller.getIsServer()) {
+                        Server server = controller.getServer();
+                        server.stopAccept();
+                        System.out.println("Send start game");
+                        long seed = System.currentTimeMillis();
+                        controller.setSeed(seed);
+                        System.out.println("Seed: " + seed);
+                        server.sendStartGame(seed);
+                    }
+                    System.out.println("Set multiplayer game");
+                    controller.initialGamePreparations();
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
+                }
                 else if (smallGameButton.getBoundary().contains(event.getX(), event.getY())) {
                     inputIp = new StringBuilder("IP: ");
                     inputPort = new StringBuilder("Port: ");
 
                     ip = null;
-                    port = null;
+                    port = -1;
 
                     screenMode = ScreenMode.CONNECTION_MENU;
                 }
@@ -336,11 +449,43 @@ public class Main extends Application {
         });
 
         stage.show();
+    }
 
+    private void createServer() {
+        Server server = controller.getServer();
+        if (server != null && !(server.getIp().equals(ip) && port == server.getPort())) { // if new server ip:port
+            server.close();
+            server = null;
+        }
+        if (server == null) {
+            try {
+                controller.setServer(new Server(ip, port));
+            } catch (IOException exception) {
+                System.out.println("incorrect address " + ip + ":" + port);
+            }
+        }
+    }
+
+    private void createClient() {
+        Client client = controller.getClient();
+        if (client != null && !(client.getIp().equals(ip) && port == client.getPort())) { // if new client ip:port
+            client.close();
+            client = null;
+        }
+        if (client == null) {
+            try {
+                client = new Client(ip, port);
+                controller.setClient(client);
+                client.sendConnected();
+            } catch (IOException exception) {
+                System.out.println("can't connect to server " + ip + ":" + port);
+            }
+        }
     }
 
     private void restartGame() {
         controller = new Controller(this);
+        controller.initialGamePreparations();
         rightLeftListener = controller.getInput();
     }
 

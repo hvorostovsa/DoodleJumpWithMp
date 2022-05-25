@@ -1,26 +1,62 @@
 package com.example.doodlejumpwithmp;
 
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
+import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.MovingPlatform;
 import com.example.doodlejumpwithmp.model.platform.OneJumpPlatform;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import com.example.doodlejumpwithmp.model.platform.ZeroJumpPlatform;
+import com.example.doodlejumpwithmp.model.serverwork.Client;
+import com.example.doodlejumpwithmp.model.serverwork.Server;
+import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Controller {
     private final Main main;
     private final Doodle doodle;
+    private final Map<Integer, ShadowDoodle> shadowDoodles = new HashMap<>();
 
     private final ArrayList<Platform> platforms = new ArrayList<>();
     private final ArrayList<String> input = new ArrayList<>();
 
     private int interval = 100;
     private boolean gameOver = false;
-    private boolean isServer; // null if single player. True if user is host.
+    private boolean isServer = false; // null if single player. True if user is host.
+    private boolean isClient = false;
+
+    private Server server;
+    private Client client;
+
+    private Random random = new Random();
+
+    public void setSeed(long seed) {
+        random = new Random(seed);
+        System.out.println(random.nextLong());
+    }
+
+    public Map<Integer, ShadowDoodle> getShadowDoodles() {
+        return shadowDoodles;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
 
     private double score = 0;
 
@@ -32,12 +68,20 @@ public class Controller {
         return doodle;
     }
 
+    public boolean getIsServer() {
+        return isServer;
+    }
+
     public void setIsServer(boolean isServer) {
         this.isServer = isServer;
     }
 
-    public boolean getIsServer() {
-        return isServer;
+    public boolean getIsClient() {
+        return isClient;
+    }
+
+    public void setIsClient(boolean isClient) {
+        this.isClient = isClient;
     }
 
     public boolean ifDoodleFall() {
@@ -50,13 +94,14 @@ public class Controller {
 
     public Controller(Main main) {
         this.main = main;
-        Doodle player = new Doodle(Main.doodleImage);
-        this.doodle = player;
+        this.doodle = new Doodle(Main.doodleImage);
+    }
 
+    public void initialGamePreparations() {
         Platform oldPlatform = new Platform(Main.platformImage);
         oldPlatform.setPosition(185, Main.getScreenHeight() - 15);
         platforms.add(oldPlatform);
-        player.setPosition(185, 560);
+        doodle.setPosition(185, 560);
         double max = 0;
         while (max < Main.getScreenHeight()) {
             Platform newPlatform = placePlatform(oldPlatform);
@@ -66,17 +111,17 @@ public class Controller {
         }
     }
 
+    public void addShadowDoodle(int clientId) {
+        ShadowDoodle shadowDoodle = new ShadowDoodle(Main.shadowDoodleImage);
+        shadowDoodle.setClientId(clientId);
+        shadowDoodles.put(clientId, shadowDoodle);
+    }
+
     public boolean containsPlatform(Platform platform, double bottom, double top) {
         return platform.getY() > top && platform.getY() < bottom;
     }
 
-    /* это ведь уже не надо??
-    private static boolean getTrueByChance(double number) {
-        // double number from 0.0 to 1.0
-        return new Random().nextDouble() < number;
-    }*/
-
-    private static int getRandomEventNumber(Double... numbers) {
+    private int getRandomEventNumber(Double... numbers) {
         // pass numbers (1, 1.5, 2.5). Get 0 by chance 20%, 1 by chance 30%, 2 by chance 50%
         ArrayList<Double> newNumbers = new ArrayList<>(List.of(numbers));
         double sum = newNumbers.get(0);
@@ -86,7 +131,8 @@ public class Controller {
             sum += currentNumber;
             newNumbers.set(i, currentNumber + newNumbers.get(i - 1));
         }
-        double randomNumber = new Random().nextDouble() * sum;
+        double randomNumber = random.nextDouble() * sum;
+        System.out.println("randomNumber: " + randomNumber);
         int resultIndex = 0;
         while (randomNumber > newNumbers.get(resultIndex)) {
             resultIndex += 1;
@@ -94,7 +140,14 @@ public class Controller {
         return resultIndex;
     }
 
-    private Platform createPlatform(Platform previous, double x, double y, double i, double j, int speed) {
+    private Platform createPlatform(
+            Platform previous,
+            double x,
+            double y,
+            double i,
+            double j,
+            int speed
+    ) {
         Platform platform;
         int platformNumber = getRandomEventNumber(x, y, i, j);
         // 0 => Classic platform by x% chance
@@ -108,7 +161,10 @@ public class Controller {
             case 3 -> new ZeroJumpPlatform(Main.zeroJumpPlatformImage); // Zero Jump Platform by j% chance
             default -> throw new IllegalStateException("Unexpected value: " + platformNumber);
         };
-        platform.setPosition(new Random().nextInt(380), previous.getY() - 10 - new Random().nextInt(interval));
+        int nextInt1 = random.nextInt(380);
+        int nextInt2 = random.nextInt(interval);
+        System.out.println("nextInt1: " + nextInt1 + ", nextInt2: " + nextInt2);
+        platform.setPosition(nextInt1, previous.getY() - 10 - nextInt2);
         if (!platform.intersectPlatform(previous)) {
             return platform;
         }
@@ -135,7 +191,7 @@ public class Controller {
     }
 
     public String getScoreString() {
-        int intScore = (int) Math.round(score);
+        int intScore = (int) Math.floor(score);
         return "Your score:" + intScore;
     }
 
@@ -159,7 +215,7 @@ public class Controller {
 
     }
 
-    public void updateCoordinateX() {
+    private void updateCoordinateX() {
         if (input.contains("RIGHT")) {
             if (input.contains("LEFT")) {
                 doodle.moveX(0); // no move
@@ -173,8 +229,60 @@ public class Controller {
         }
     }
 
-    public void updateCoordinateY() {
+    private void updateCoordinateY() {
         doodle.moveY(getPlatforms());
+    }
+
+    private void updateDoodle() {
+        updateCoordinateY();
+        updateCoordinateX();
+    }
+
+    private void getNewInfo() {
+        if (isServer) { // server
+            LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
+            while (receivedRequests.size() > 0) {
+                JSONObject response = receivedRequests.pop();
+                int code = response.getIntValue("code");
+                ServerKey serverKey = ServerKey.getKeyByCode(code);
+                switch (serverKey) {
+                    case NEW_INFO -> {
+                        int clientId = response.getIntValue("clientId");
+                        shadowDoodles.get(clientId).updateData(score, response);
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + serverKey);
+                }
+            }
+        } else if (isClient) { // client
+            LinkedList<JSONObject> receivedRequests = client.getReceivedRequests();
+            while (receivedRequests.size() > 0) {
+                JSONObject response = receivedRequests.pop();
+                int code = response.getIntValue("code");
+                ServerKey serverKey = ServerKey.getKeyByCode(code);
+                switch (serverKey) {
+                    case NEW_INFO -> {
+                        JSONArray users = response.getJSONArray("users");
+                        for (int i = 0; i < users.size(); i++) {
+                            JSONObject user = users.getJSONObject(i);
+                            int clientId = user.getIntValue("clientId");
+                            JSONObject data = user.getJSONObject("data");
+                            shadowDoodles.get(clientId).updateData(score, data);
+                        }
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + serverKey);
+                }
+            }
+        }
+    }
+
+    public void updateShadowDoodles() {
+        for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
+            if (shadowDoodle.isOnScreen()) {
+//                System.out.println("Yes, on screen");
+                shadowDoodle.moveY(platforms);
+                shadowDoodle.moveX();
+            }
+        }
     }
 
     private void updatePlatforms() {
@@ -183,12 +291,34 @@ public class Controller {
         }
     }
 
-    public void update() {
-        dragScreen();
-        updateCoordinateY();
-        updateCoordinateX();
-        updatePlatforms();
-        main.repaintScene();
+    private void sendInfo() {
+        if (isServer) { // if server
+            Map<Integer, JSONObject> map = new HashMap<>();
+            for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
+                JSONObject data = shadowDoodle.collectData();
+                if (data == null) {
+                    continue;
+                }
+                map.put(shadowDoodle.getClientId(), data);
+            }
+            JSONObject data = doodle.collectData();
+            data.put("score", score);
+            map.put(0, data);
+            server.sendNewInfo(map);
+        } else if (isClient) { // if client
+            JSONObject newInfo = doodle.collectData();
+            newInfo.put("score", score);
+            client.sendNewInfo(newInfo);
+        }
     }
 
+    public void update() {
+        dragScreen();
+        updateDoodle();
+        updatePlatforms();
+        sendInfo();
+        updateShadowDoodles();
+        main.repaintScene();
+        getNewInfo();
+    }
 }
