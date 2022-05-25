@@ -6,9 +6,9 @@ public class Platform {
     private static final int WIDTH = 70;
     private static final int HEIGHT = 15;
 
-    double coordinateX; // package private. Getters and setters are bad!!
-    double coordinateY;
-    final Image platformImage;
+    private double coordinateX; // package private. Getters and setters are bad!!
+    private double coordinateY;
+    private final Image platformImage;
 
     public Platform(Image platformImage) {
         this.coordinateX = 0;

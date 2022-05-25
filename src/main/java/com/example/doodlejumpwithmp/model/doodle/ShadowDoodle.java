@@ -2,11 +2,11 @@ package com.example.doodlejumpwithmp.model.doodle;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
-import com.example.doodlejumpwithmp.model.Direction;
+import com.example.doodlejumpwithmp.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ShadowDoodle extends Doodle {
     // Other players will be shown as ShadowDoodle
@@ -29,7 +29,7 @@ public class ShadowDoodle extends Doodle {
     }
 
     @Override
-    public void moveY(ArrayList<Platform> platforms) {
+    public void moveY(List<Platform> platforms) {
         if (isOnScreen()) {
             super.moveY(platforms);
         }

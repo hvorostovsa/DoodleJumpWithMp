@@ -128,6 +128,7 @@ class ServerCell extends Thread {
     private final BufferedReader in;
     private final BufferedWriter out;
     private int clientId; // technical final
+    private boolean stopped = false;
 
     public ServerCell(Server server, Socket socket) throws IOException {
         this.server = server;
@@ -145,17 +146,10 @@ class ServerCell extends Thread {
     public void close() {
         try {
             if (!socket.isClosed()) {
+                stopped = true;
                 socket.close();
                 in.close();
                 out.close();
-                LinkedList<ServerCell> serverList = server.getServerList();
-                for (ServerCell cell : serverList) {
-                    if (cell.equals(this)) {
-                        cell.interrupt();
-                        serverList.remove(this);
-                        break;
-                    }
-                }
             }
         } catch (IOException ignored) {}
     }
@@ -174,7 +168,7 @@ class ServerCell extends Thread {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!stopped) {
                 String responseString = read();
                 JSONObject responseJsonObject = JSON.parseObject(responseString);
                 handleResponse(responseJsonObject);

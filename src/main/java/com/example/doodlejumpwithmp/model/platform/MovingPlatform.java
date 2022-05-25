@@ -1,7 +1,7 @@
 package com.example.doodlejumpwithmp.model.platform;
 
 import com.example.doodlejumpwithmp.Main;
-import com.example.doodlejumpwithmp.model.Direction;
+import com.example.doodlejumpwithmp.Direction;
 import javafx.scene.image.Image;
 
 public class MovingPlatform extends Platform {
@@ -13,17 +13,15 @@ public class MovingPlatform extends Platform {
     }
 
     private void move() {
-        this.coordinateX += moveDirection.getValue() * moveSpeed;
-        double difference;
-        if (this.coordinateX <= 0) {
-            difference = coordinateX * -1;
-            this.coordinateX = difference;
+        double coordinateX = getX() + moveDirection.getValue() * moveSpeed;
+        if (coordinateX <= 0) {
+            coordinateX = coordinateX * -1;
             moveDirection = moveDirection.getOpposite();
-        } else if (this.coordinateX >= Main.SCREEN_WIDTH - getWidth()) {
-            difference = this.coordinateX - (Main.SCREEN_WIDTH - getWidth());
-            this.coordinateX = (Main.SCREEN_WIDTH - getWidth()) - difference;
+        } else if (coordinateX >= Main.SCREEN_WIDTH - getWidth()) {
+            coordinateX = 2 * (Main.SCREEN_WIDTH - getWidth()) - coordinateX;
             moveDirection = moveDirection.getOpposite();
         }
+        setX(coordinateX);
     }
 
     public Platform returnWithNewSpeed(int moveSpeed) {
@@ -35,5 +33,4 @@ public class MovingPlatform extends Platform {
     public void update() {
         move();
     }
-
 }

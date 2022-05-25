@@ -3,7 +3,6 @@ package com.example.doodlejumpwithmp;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.MovingPlatform;

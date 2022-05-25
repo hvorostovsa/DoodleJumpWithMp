@@ -2,11 +2,11 @@ package com.example.doodlejumpwithmp.model.doodle;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
-import com.example.doodlejumpwithmp.model.Direction;
+import com.example.doodlejumpwithmp.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Doodle {
     private static final int WIDTH = 60;
@@ -115,7 +115,7 @@ public class Doodle {
         diffY = -11;
     }
 
-    public void moveY(ArrayList<Platform> platforms) {
+    public void moveY(List<Platform> platforms) {
         diffY += 0.3;
         coordinateY += diffY;
         fall = diffY > 0;
