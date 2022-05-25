@@ -22,7 +22,6 @@ public class Controller {
 
     private final ArrayList<Platform> platforms = new ArrayList<>();
     private final ArrayList<String> input = new ArrayList<>();
-
     private int interval = 100;
     private boolean gameOver = false;
     private boolean isServer = false; // null if single player. True if user is host.

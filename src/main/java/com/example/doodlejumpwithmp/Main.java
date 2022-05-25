@@ -34,8 +34,6 @@ public class Main extends Application {
     private final static int LOGO_WIDTH = 350;
     private final static int LOGO_HEIGHT = 250;
 
-    private String direction = "RIGHT";
-
     private StringBuilder inputIp = new StringBuilder("IP: ");
     private StringBuilder inputPort = new StringBuilder("Port: ");
 
@@ -46,7 +44,7 @@ public class Main extends Application {
 
     private GraphicsContext gc;
     private Controller controller;
-    private ArrayList<String> rightLeftListener;
+    private ArrayList<String> controlList;
     private ScreenMode screenMode = ScreenMode.START_MENU;
 
     private static MenuButton firstGameButton;
@@ -108,7 +106,7 @@ public class Main extends Application {
         repaintScore();
         repaintShadowDoodles();
         repaintDoodle(controller.getDoodle());
-        // TODO add buttons instead of text
+
         if (controller.isDoodleFall()) {
             gc.drawImage(logoImage, 50, 20);
             firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
@@ -120,14 +118,15 @@ public class Main extends Application {
     }
 
     private void repaintDoodle(Doodle doodle) {
-        if (direction.equals("RIGHT"))
-            gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
-        else
-            gc.drawImage(
+        switch (doodle.getDoodleSide().getValue()) { // ))
+            case 1 -> gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
+            case -1 -> gc.drawImage(
                     doodle.getImage(),
                     doodle.getX() + doodle.getImage().getWidth(), doodle.getY(),
                     -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight()
             );
+            default -> throw new IllegalStateException("Unexpected value: " + doodle.getDoodleSide());
+        }
     }
 
     private void repaintShadowDoodles() {
@@ -296,7 +295,7 @@ public class Main extends Application {
         gc.drawImage(background, 0, 0);
         controller = new Controller(this);
 
-        rightLeftListener = controller.getInput();
+        controlList = controller.getInput();
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -407,9 +406,8 @@ public class Main extends Application {
 
             if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 if (code.equals("RIGHT") || code.equals("LEFT")) {
-                    direction = code;
-                    if (!rightLeftListener.contains(code)) {
-                        rightLeftListener.add(code);
+                    if (!controlList.contains(code)) {
+                        controlList.add(code);
                     }
                 }
             }
@@ -419,7 +417,7 @@ public class Main extends Application {
             if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 String code = event.getCode().toString();
                 if (code.equals("RIGHT") || code.equals("LEFT"))
-                    rightLeftListener.remove(code);
+                    controlList.remove(code);
             }
         });
 
@@ -461,7 +459,7 @@ public class Main extends Application {
     private void restartGame() {
         controller = new Controller(this);
         controller.initialGamePreparations();
-        rightLeftListener = controller.getInput();
+        controlList = controller.getInput();
     }
 
     public static void main(String[] args) {
