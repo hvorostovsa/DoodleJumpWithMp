@@ -32,6 +32,8 @@ public class Controller {
     private Server server;
     private Client client;
 
+    private int counter = 0;
+
     private Random random = new Random();
 
     public void setSeed(long seed) {
@@ -328,7 +330,10 @@ public class Controller {
         dragScreen();
         updateDoodle();
         updatePlatforms();
-        new Thread(this::sendInfo).start();
+        if (++counter > 10) {
+            counter = 0;
+            new Thread(this::sendInfo).start();
+        }
         updateShadowDoodles();
         main.repaintScene();
         new Thread(this::getNewInfo).start();
