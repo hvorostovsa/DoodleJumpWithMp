@@ -2,8 +2,9 @@ package com.example.doodlejumpwithmp.model.doodle;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
-import com.example.doodlejumpwithmp.Direction;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
+import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
 import javafx.scene.image.Image;
 
 import java.util.List;
@@ -84,17 +85,17 @@ public class ShadowDoodle extends Doodle {
         if (getLoose()) { // we don't need to update data if this doodle is looser
             return;
         }
-        if (data.containsKey("loose") && data.getBoolean("loose")) {
+        if (data.containsKey(ServerParameter.LOOSE.toString()) && data.getBoolean(ServerParameter.LOOSE.toString())) {
             setLoose(true);
         } else {
-            setX(data.getDouble("coordinateX"));
-            setY(data.getDouble("coordinateY"));
-            setMoveDirection(Direction.getByValue(data.getIntValue("moveDirection")));
+            setX(data.getDouble(ServerParameter.COORDINATE_X.toString()));
+            setY(data.getDouble(ServerParameter.COORDINATE_Y.toString()));
+            setMoveDirection(Direction.getByValue(data.getIntValue(ServerParameter.MOVE_DIRECTION.toString())));
             setLastDirection(getMoveDirection());
-            setMoveSpeed(data.getDouble("moveSpeed"));
-            setDoodleSide(Direction.getByValue(data.getIntValue("doodleSide")));
-            setDiffY(data.getDouble("diffY"));
-            this.score = data.getDouble("score");
+            setMoveSpeed(data.getDouble(ServerParameter.MOVE_SPEED.toString()));
+            setDoodleSide(Direction.getByValue(data.getIntValue(ServerParameter.DOODLE_SIDE.toString())));
+            setDiffY(data.getDouble(ServerParameter.DIFF_Y.toString()));
+            this.score = data.getDouble(ServerParameter.SCORE.toString());
 
             // set realY by scores' difference
             double YOffset = this.score - score;

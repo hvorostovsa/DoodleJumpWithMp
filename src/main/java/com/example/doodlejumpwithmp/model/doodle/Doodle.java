@@ -2,8 +2,9 @@ package com.example.doodlejumpwithmp.model.doodle;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
-import com.example.doodlejumpwithmp.Direction;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
+import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
 import javafx.scene.image.Image;
 
 import java.util.List;
@@ -180,14 +181,14 @@ public class Doodle {
         //  get pos, speed, loose, lastMove and put it into JSONObject
         JSONObject data = new JSONObject();
         if (loose) {
-            data.put("loose", true);
+            data.put(ServerParameter.LOOSE.toString(), true);
         } else {
-            data.put("coordinateX", this.coordinateX);
-            data.put("coordinateY", this.coordinateY);
-            data.put("moveDirection", this.moveDirection.getValue());
-            data.put("moveSpeed", this.moveSpeed);
-            data.put("doodleSide", this.doodleSide.getValue());
-            data.put("diffY", this.getDiffY());
+            data.put(ServerParameter.COORDINATE_X.toString(), this.coordinateX);
+            data.put(ServerParameter.COORDINATE_Y.toString(), this.coordinateY);
+            data.put(ServerParameter.MOVE_DIRECTION.toString(), this.moveDirection.getValue());
+            data.put(ServerParameter.MOVE_SPEED.toString(), this.moveSpeed);
+            data.put(ServerParameter.DOODLE_SIDE.toString(), this.doodleSide.getValue());
+            data.put(ServerParameter.DIFF_Y.toString(), this.getDiffY());
         }
         return data;
     }

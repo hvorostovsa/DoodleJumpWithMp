@@ -3,6 +3,7 @@ package com.example.doodlejumpwithmp;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.MovingPlatform;
@@ -12,6 +13,7 @@ import com.example.doodlejumpwithmp.model.platform.ZeroJumpPlatform;
 import com.example.doodlejumpwithmp.model.serverwork.Client;
 import com.example.doodlejumpwithmp.model.serverwork.Server;
 import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
+import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
 
 import java.util.*;
 
@@ -246,11 +248,11 @@ public class Controller {
             LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
             while (receivedRequests.size() > 0) {
                 JSONObject response = receivedRequests.pop();
-                int code = response.getIntValue("code");
+                int code = response.getIntValue(ServerParameter.CODE.toString());
                 ServerKey serverKey = ServerKey.getKeyByCode(code);
                 switch (serverKey) {
                     case NEW_INFO -> {
-                        int clientId = response.getIntValue("clientId");
+                        int clientId = response.getIntValue(ServerParameter.CLIENT_ID.toString());
                         shadowDoodles.get(clientId).updateData(score, response);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + serverKey);
@@ -259,16 +261,21 @@ public class Controller {
         } else if (isClient) { // client
             LinkedList<JSONObject> receivedRequests = client.getReceivedRequests();
             while (receivedRequests.size() > 0) {
-                JSONObject response = receivedRequests.pop();
-                int code = response.getIntValue("code");
+                JSONObject response;
+                try {
+                    response = receivedRequests.pop();
+                } catch (NoSuchElementException ignored) {
+                    break;
+                }
+                int code = response.getIntValue(ServerParameter.CODE.toString());
                 ServerKey serverKey = ServerKey.getKeyByCode(code);
                 switch (serverKey) {
                     case NEW_INFO -> {
-                        JSONArray users = response.getJSONArray("users");
+                        JSONArray users = response.getJSONArray(ServerParameter.USERS.toString());
                         for (int i = 0; i < users.size(); i++) {
                             JSONObject user = users.getJSONObject(i);
-                            int clientId = user.getIntValue("clientId");
-                            JSONObject data = user.getJSONObject("data");
+                            int clientId = user.getIntValue(ServerParameter.CLIENT_ID.toString());
+                            JSONObject data = user.getJSONObject(ServerParameter.DATA.toString());
                             shadowDoodles.get(clientId).updateData(score, data);
                         }
                     }
@@ -321,9 +328,9 @@ public class Controller {
         dragScreen();
         updateDoodle();
         updatePlatforms();
-        sendInfo();
+        new Thread(this::sendInfo).start();
         updateShadowDoodles();
         main.repaintScene();
-        getNewInfo();
+        new Thread(this::getNewInfo).start();
     }
 }

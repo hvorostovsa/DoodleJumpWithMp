@@ -1,7 +1,7 @@
 package com.example.doodlejumpwithmp.model.platform;
 
 import com.example.doodlejumpwithmp.Main;
-import com.example.doodlejumpwithmp.Direction;
+import com.example.doodlejumpwithmp.model.Direction;
 import javafx.scene.image.Image;
 
 public class MovingPlatform extends Platform {

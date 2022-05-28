@@ -1,4 +1,4 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.model;
 
 public enum Direction {
     LEFT(-1),

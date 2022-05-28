@@ -1,12 +1,14 @@
 package com.example.doodlejumpwithmp;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import com.example.doodlejumpwithmp.model.serverwork.Client;
 import com.example.doodlejumpwithmp.model.serverwork.Server;
 import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
+import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -120,9 +122,9 @@ public class Main extends Application {
     }
 
     private void repaintDoodle(Doodle doodle) {
-        switch (doodle.getDoodleSide().getValue()) { // ))
-            case 1 -> gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
-            case -1 -> gc.drawImage(
+        switch (doodle.getDoodleSide()) {
+            case RIGHT -> gc.drawImage(doodle.getImage(), doodle.getX(), doodle.getY());
+            case LEFT -> gc.drawImage(
                     doodle.getImage(),
                     doodle.getX() + doodle.getImage().getWidth(), doodle.getY(),
                     -1 * doodle.getImage().getWidth(), doodle.getImage().getHeight()
@@ -133,9 +135,9 @@ public class Main extends Application {
 
     private void repaintShadowDoodles() {
         for (ShadowDoodle shadowDoodle: controller.getShadowDoodles().values()) {
-            switch (shadowDoodle.getDoodleSide().getValue()) { // ))
-                case 1 -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
-                case -1 -> gc.drawImage(
+            switch (shadowDoodle.getDoodleSide()) {
+                case RIGHT -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
+                case LEFT -> gc.drawImage(
                         shadowDoodle.getImage(),
                         shadowDoodle.getX() + shadowDoodle.getImage().getWidth(), shadowDoodle.getY(),
                         -1 * shadowDoodle.getImage().getWidth(), shadowDoodle.getImage().getHeight()
@@ -220,11 +222,11 @@ public class Main extends Application {
             JSONObject response;
             while (receivedRequests.size() > 0) {
                 response = receivedRequests.pop();
-                int code = response.getIntValue("code");
+                int code = response.getIntValue(ServerParameter.CODE.toString());
                 ServerKey serverKey = ServerKey.getKeyByCode(code);
                 switch (serverKey) {
                     case CONNECTED -> {
-                        int newClientId = response.getIntValue("clientId");
+                        int newClientId = response.getIntValue(ServerParameter.CLIENT_ID.toString());
                         controller.addShadowDoodle(newClientId);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + serverKey);
@@ -244,13 +246,14 @@ public class Main extends Application {
                     break;
                 }
                 response = receivedRequests.pop();
-                int code = response.getIntValue("code");
+                int code = response.getIntValue(ServerParameter.CODE.toString());
                 ServerKey serverKey = ServerKey.getKeyByCode(code);
                 switch (serverKey) {
                     case SET_ID -> {
-                        int clientId = response.getIntValue("newId");
+                        int clientId = response.getIntValue(ServerParameter.NEW_ID.toString());
                         client.setClientId(clientId);
-                        Integer[] connections = response.getJSONArray("connections").toArray(Integer[]::new);
+                        Integer[] connections =
+                                response.getJSONArray(ServerParameter.CONNECTIONS.toString()).toArray(Integer[]::new);
                         List<Integer> list = Stream.of(connections).filter(it -> it != clientId).toList();
                         client.getConnections().addAll(list);
                         for (Integer id: list) {
@@ -258,12 +261,12 @@ public class Main extends Application {
                         }
                     }
                     case NEW_USER_ADDED -> {
-                        int newClientId = response.getIntValue("clientId");
+                        int newClientId = response.getIntValue(ServerParameter.CLIENT_ID.toString());
                         controller.addShadowDoodle(newClientId);
                     }
                     case START_GAME -> {
                         gameStarted = true;
-                        long seed = response.getLong("seed");
+                        long seed = response.getLong(ServerParameter.SEED.toString());
                         System.out.println("Seed: " + seed);
                         controller.setSeed(seed);
                         controller.initialGamePreparations();
@@ -315,7 +318,6 @@ public class Main extends Application {
         timer.start();
 
         scene.setOnMouseClicked(event -> {
-
             if (screenMode == ScreenMode.START_MENU) {
                 if (firstGameButton.getBoundary().contains(event.getX(), event.getY())) {
                     controller.initialGamePreparations();

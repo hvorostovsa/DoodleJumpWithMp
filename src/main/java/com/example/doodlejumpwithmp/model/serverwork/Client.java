@@ -106,12 +106,12 @@ public class Client extends Thread {
     // different requests
     public void sendConnected() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", ServerKey.CONNECTED.getCode());
+        jsonObject.put(ServerParameter.CODE.toString(), ServerKey.CONNECTED.getCode());
         send(jsonObject.toString());
     }
 
     public void sendNewInfo(JSONObject newInfo) {
-        newInfo.put("code", ServerKey.NEW_INFO.getCode());
+        newInfo.put(ServerParameter.CODE.toString(), ServerKey.NEW_INFO.getCode());
         send(newInfo.toString());
     }
 }
