@@ -330,7 +330,7 @@ public class Controller {
         dragScreen();
         updateDoodle();
         updatePlatforms();
-        if (++counter > 10) {
+        if (++counter > 5) {
             counter = 0;
             new Thread(this::sendInfo).start();
         }
