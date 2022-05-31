@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Group xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.doodlejumpwithmp.ClientMenuController">
+   <children>
+      <AnchorPane prefHeight="700.0" prefWidth="450.0">
+         <children>
+            <ImageView fitHeight="700.0" fitWidth="450.0" layoutX="113.0" layoutY="254.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <image>
+                  <Image url="@background.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="120.0" fitWidth="180.0" layoutX="13.0" layoutY="450.0" onMouseClicked="#submitClick" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Button_Mouth.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="54.0" layoutY="525.0" onMouseClicked="#textOnSubmitButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Submit" textAlignment="CENTER" wrappingWidth="96.39996337890625" AnchorPane.bottomAnchor="171.1064453125">
+               <font>
+                  <Font name="Times New Roman" size="18.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="60.0" fitWidth="90.0" layoutX="180.0" layoutY="577.0" onMouseClicked="#backButtonClick" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Button_Mouth.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="202.0" layoutY="612.0" onMouseClicked="#textOnBackButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Back" textAlignment="CENTER" wrappingWidth="46.79998779296875" AnchorPane.topAnchor="597.7421875">
+               <font>
+                  <Font name="Times New Roman" size="16.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="110.0" fitWidth="350.0" layoutX="54.0" layoutY="123.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Nice_TextField.png" />
+               </image>
+            </ImageView>
+            <TextField fx:id="topTextField" alignment="CENTER" layoutX="100.0" layoutY="182.0" prefHeight="25.0" prefWidth="250.0" promptText="IP: 999.999.999.999" style="-fx-background-color: none; -fx-border-color: #26942a; -fx-border-radius: 10; -fx-border-width: 3; -fx-text-fill: #575aad;">
+               <font>
+                  <Font name="Times New Roman" size="13.0" />
+               </font>
+               <effect>
+                  <Lighting light="$null">
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                  </Lighting>
+               </effect>
+            </TextField>
+            <ImageView fitHeight="110.0" fitWidth="350.0" layoutX="54.0" layoutY="269.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Nice_TextField.png" />
+               </image>
+            </ImageView>
+            <TextField fx:id="bottomTextField" alignment="CENTER" layoutX="100.0" layoutY="328.0" prefHeight="25.0" prefWidth="250.0" promptText="Port: 99999" style="-fx-background-color: none; -fx-border-color: #26942a; -fx-border-radius: 10; -fx-border-width: 3; -fx-text-fill: #575aad;">
+               <font>
+                  <Font name="Times New Roman" size="13.0" />
+               </font>
+               <effect>
+                  <Lighting light="$null">
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                  </Lighting>
+               </effect>
+            </TextField>
+         </children>
+      </AnchorPane>
+   </children>
+</Group>

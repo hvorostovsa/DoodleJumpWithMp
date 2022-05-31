@@ -5,6 +5,7 @@ public enum ScreenMode {
     MULTIPLAYER_GAME,
     START_MENU,
     CONNECTION_MENU,
+    GAME_OVER_MENU,
     SERVER_ROOM,
     CLIENT_ROOM,
 }

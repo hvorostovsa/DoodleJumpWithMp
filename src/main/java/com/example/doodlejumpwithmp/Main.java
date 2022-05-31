@@ -1,7 +1,6 @@
 package com.example.doodlejumpwithmp;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.Platform;
@@ -11,13 +10,18 @@ import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
 import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -48,6 +52,7 @@ public class Main extends Application {
 
     private GraphicsContext gc;
     private Controller controller;
+    private ClientServerController csc;
     private ArrayList<String> controlList;
     private ScreenMode screenMode = ScreenMode.START_MENU;
 
@@ -60,10 +65,19 @@ public class Main extends Application {
     private static MenuTextField portTextField;
     private boolean portFieldIsActive = false;
 
+    private boolean screenModeIsChanged = true;
+
     static Image background = new Image(
             MainUtils.getFilePathFromResources("background.png"),
             SCREEN_WIDTH, SCREEN_HEIGHT, false, false
     );
+
+//    static BackgroundImage backgroundImage = new BackgroundImage(background,
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundPosition.DEFAULT,
+//            BackgroundSize.DEFAULT);
+
     static Image platformImage = new Image(
             MainUtils.getFilePathFromResources("Normal_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
@@ -101,6 +115,14 @@ public class Main extends Application {
         return port;
     }
 
+    public void setScreenMode(ScreenMode screenMode) {
+        this.screenMode = screenMode;
+    }
+
+    public void changeScreenMode() {
+        screenModeIsChanged = true;
+    }
+
     public void repaintScene() {
         gc.drawImage(background, 0, 0);
         for (Platform platform : controller.getPlatforms()) {
@@ -112,12 +134,16 @@ public class Main extends Application {
         repaintDoodle(controller.getDoodle());
 
         if (controller.isDoodleFall()) {
-            gc.drawImage(logoImage, 50, 20);
-            firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
-            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
-
-            firstGameButton.createOnPosition(125, 300, "Restart");
-            secondGameButton.createOnPosition(125, 450, "Exit to Main Menu");
+//            gc.drawImage(logoImage, 50, 20);
+//            firstGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+//            secondGameButton = new MenuButton(gc, MENU_BUTTON_WIDTH);
+//
+//            firstGameButton.createOnPosition(125, 300, "Restart");
+//            secondGameButton.createOnPosition(125, 450, "Exit to Main Menu");
+            screenMode = ScreenMode.GAME_OVER_MENU;
+            screenModeIsChanged = true;
+            controller = new Controller(this);
+            controlList = controller.getInput();
         }
     }
 
@@ -134,7 +160,7 @@ public class Main extends Application {
     }
 
     private void repaintShadowDoodles() {
-        for (ShadowDoodle shadowDoodle: controller.getShadowDoodles().values()) {
+        for (ShadowDoodle shadowDoodle : controller.getShadowDoodles().values()) {
             switch (shadowDoodle.getDoodleSide()) {
                 case RIGHT -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
                 case LEFT -> gc.drawImage(
@@ -155,7 +181,7 @@ public class Main extends Application {
         setText(controller.getScoreString(), 20, 20, 20);
     }
 
-    private void runStartingMenu() {
+    /*private void runStartingMenu() {
         gc.drawImage(background, 0, 0);
         gc.drawImage(logoImage, 50, 20);
 
@@ -177,14 +203,12 @@ public class Main extends Application {
         firstGameButton.createOnPosition(125, 300, "Create Room");
         secondGameButton.createOnPosition(125, 450, "Find Room");
         smallGameButton.createOnPosition(250, 600, "Back");
-    }
+    }*/
 
-    private void openConnectionSettings(boolean isServer) {
+    /*private void openConnectionSettings(boolean isServer) {
         controller.setIsServer(isServer);
         controller.setIsClient(!isServer);
-
         gc.drawImage(background, 0, 0);
-
         String ip = inputIp.toString();
         String port = inputPort.toString();
 
@@ -213,9 +237,21 @@ public class Main extends Application {
 
     private void openConnectionSettings() {
         openConnectionSettings(false);
-    }
+    }*/
 
-    private void beforeStartServerWork() {
+    /*private void beforeConnectionStart(boolean isServer) {
+
+        if (isServer) {
+            beforeStartServerWork();
+        } else {
+            beforeStartClientWork();
+        }
+    }
+    private void beforeConnectionStart() {
+        beforeConnectionStart(false);
+    }*/
+
+    /*private void beforeStartServerWork() {
         Server server = controller.getServer();
         if (server != null) {
             LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
@@ -256,7 +292,7 @@ public class Main extends Application {
                                 response.getJSONArray(ServerParameter.CONNECTIONS.toString()).toArray(Integer[]::new);
                         List<Integer> list = Stream.of(connections).filter(it -> it != clientId).toList();
                         client.getConnections().addAll(list);
-                        for (Integer id: list) {
+                        for (Integer id : list) {
                             controller.addShadowDoodle(id);
                         }
                     }
@@ -276,7 +312,7 @@ public class Main extends Application {
                 }
             }
         }
-    }
+    }*/
 
     private void setText(String string, double x, double y, int size) {
         Font font = new Font("Times New Roman", size);
@@ -286,44 +322,67 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws IOException {
+        controller = new Controller(this);
+        csc = new ClientServerController(this, controller);
         stage.setResizable(false);
 
-        Group root = new Group();
-        Scene scene = new Scene(root, SCREEN_WIDTH, SCREEN_HEIGHT);
-        stage.setScene(scene);
-
+        Group gameRoot = new Group();
+        Scene scene = new Scene(gameRoot, SCREEN_WIDTH, SCREEN_HEIGHT);
         Canvas canvas = new Canvas(scene.getWidth(), scene.getHeight());
-        root.getChildren().add(canvas);
+        gameRoot.getChildren().add(canvas);
         this.gc = canvas.getGraphicsContext2D();
 
+        Scene startMenuScene = createScene(ScreenMode.START_MENU);
+        Scene connectionMenuScene = createScene(ScreenMode.CONNECTION_MENU);
+        Scene serverRoomScene = createScene(ScreenMode.SERVER_ROOM);
+        Scene clientRoomScene = createScene(ScreenMode.CLIENT_ROOM);
+
+        Scene gameOverScene = createScene(ScreenMode.GAME_OVER_MENU);
+        Text scoreText = createScoreText();
+        Group group = (Group) gameOverScene.getRoot();
+
         gc.drawImage(background, 0, 0);
-        controller = new Controller(this);
 
         controlList = controller.getInput();
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                switch (screenMode) {
-                    case SINGLE_GAME -> controller.update();
-                    case MULTIPLAYER_GAME -> controller.update(); // TODO add second doodle
-                    case START_MENU -> runStartingMenu();
-                    case CONNECTION_MENU -> runConnectingMenu();
-                    case SERVER_ROOM -> openConnectionSettings(true);
-                    case CLIENT_ROOM -> openConnectionSettings();
+                if (screenModeIsChanged) {
+                    System.out.println(1);
+                    screenModeIsChanged = false;
+                    switch (screenMode) {
+                        case SINGLE_GAME -> stage.setScene(scene);
+                        case GAME_OVER_MENU -> {
+                            group.getChildren().remove(scoreText);
+                            scoreText.setText(controller.getScoreString());
+                            group.getChildren().add(scoreText);
+                            stage.setScene(gameOverScene);
+                        }
+                        case START_MENU -> stage.setScene(startMenuScene);
+                        case CONNECTION_MENU -> stage.setScene(connectionMenuScene);
+                        case SERVER_ROOM -> stage.setScene(serverRoomScene);
+                        case CLIENT_ROOM -> stage.setScene(clientRoomScene);
+                    }
                 }
+                if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME)
+                    controller.update();
+                else if (screenMode == ScreenMode.SERVER_ROOM)
+                    csc.beforeConnectionStart(true);
+                else if (screenMode == ScreenMode.CLIENT_ROOM)
+                    csc.beforeConnectionStart();
+
             }
         };
         timer.start();
 
-        scene.setOnMouseClicked(event -> {
-            if (screenMode == ScreenMode.START_MENU) {
+        /*scene.setOnMouseClicked(event -> {
+            if (screenMode == ScreenMode.START_MENU) {/*
                 if (firstGameButton.getBoundary().contains(event.getX(), event.getY())) {
                     controller.initialGamePreparations();
                     screenMode = ScreenMode.SINGLE_GAME;
-                }
-                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
+                } else if (secondGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.CONNECTION_MENU;
             } else if (screenMode == ScreenMode.CONNECTION_MENU) {
                 if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
@@ -332,13 +391,13 @@ public class Main extends Application {
                     screenMode = ScreenMode.CLIENT_ROOM;
                 else if (smallGameButton.getBoundary().contains(event.getX(), event.getY()))
                     screenMode = ScreenMode.START_MENU;
-            } else if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
-                if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
-                    restartGame();
-                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY())) {
-                    screenMode = ScreenMode.START_MENU;
-                    restartGame();
-                }
+//            } else if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
+//                if (firstGameButton.getBoundary().contains(event.getX(), event.getY()))
+//                    ///restartGame();
+//                else if (secondGameButton.getBoundary().contains(event.getX(), event.getY())) {
+//                    screenMode = ScreenMode.START_MENU;
+//                    //restartGame();
+//                }
 
             } else {
                 if (ipTextField.getBoundary().contains(event.getX(), event.getY())) {
@@ -373,8 +432,7 @@ public class Main extends Application {
                     System.out.println("Set multiplayer game");
                     controller.initialGamePreparations();
                     screenMode = ScreenMode.MULTIPLAYER_GAME;
-                }
-                else if (smallGameButton.getBoundary().contains(event.getX(), event.getY())) {
+                } else if (smallGameButton.getBoundary().contains(event.getX(), event.getY())) {
                     inputIp = new StringBuilder("IP: ");
                     inputPort = new StringBuilder("Port: ");
 
@@ -384,12 +442,26 @@ public class Main extends Application {
                     screenMode = ScreenMode.CONNECTION_MENU;
                 }
             }
-        });
+        });*/
+
+        /*startMenuScene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.F) {
+                screenMode = ScreenMode.SINGLE_GAME;
+                controller.initialGamePreparations();
+                stage.setScene(scene);
+            }
+
+        });*/
 
         scene.setOnKeyPressed(event -> {
             String code = event.getCode().toString();
+//            if (event.getCode() == KeyCode.F) {
+//                System.out.println(2);
+//                screenMode = ScreenMode.SINGLE_GAME;
+//                stage.setScene(scene);
+//            }
 
-            if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
+            /*if (screenMode == ScreenMode.SERVER_ROOM || screenMode == ScreenMode.CLIENT_ROOM) {
                 if (ipFieldIsActive) {
                     if (inputIp.length() < MAX_NUM_IP + UNCHANGEABLE_PART_IP) {
                         if (event.getCode().isDigitKey()) inputIp.append(code.substring(code.length() - 1));
@@ -406,7 +478,7 @@ public class Main extends Application {
                     if (code.equals("BACK_SPACE") && inputPort.length() > UNCHANGEABLE_PART_PORT)
                         inputPort.delete(inputPort.length() - 1, inputPort.length());
                 }
-            }
+            }*/
 
             if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
                 if (code.equals("RIGHT") || code.equals("LEFT")) {
@@ -426,6 +498,46 @@ public class Main extends Application {
         });
 
         stage.show();
+    }
+
+
+
+    private Scene createScene(ScreenMode screenMode) {
+        FXMLLoader loader;
+        Group root = new Group();
+
+        if (screenMode == ScreenMode.START_MENU)
+            loader = new FXMLLoader(Main.class.getResource("start-menu.fxml"));
+        else if (screenMode == ScreenMode.CONNECTION_MENU)
+            loader = new FXMLLoader(Main.class.getResource("connection-menu.fxml"));
+        else if (screenMode == ScreenMode.GAME_OVER_MENU)
+            loader = new FXMLLoader(Main.class.getResource("game-over-menu.fxml"));
+        else if (screenMode == ScreenMode.SERVER_ROOM)
+            loader = new FXMLLoader(Main.class.getResource("server-room.fxml"));
+        else if (screenMode == ScreenMode.CLIENT_ROOM)
+            loader = new FXMLLoader(Main.class.getResource("client-room.fxml"));
+        else throw new IllegalStateException("File for " + screenMode + "not found");
+
+        try {
+            root = loader.load();
+            MenuController menuController = loader.getController();
+            menuController.initData(this, controller, csc);
+//            if (menuController.getClass() == GameOverMenuController.class)
+//                ((GameOverMenuController) menuController).setScoreText(controller.getScoreString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new Scene(root, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
+    }
+
+    private Text createScoreText() {
+        Text score = new Text(controller.getScoreString());
+        Font font = new Font("Times New Roman", 18);
+        score.setFont(font);
+        score.setX(180);
+        score.setY(600);
+        return score;
     }
 
     private void createServer() {
@@ -460,11 +572,9 @@ public class Main extends Application {
         }
     }
 
-    private void restartGame() {
-        controller = new Controller(this);
-        controller.initialGamePreparations();
-        controlList = controller.getInput();
-    }
+//    private void restartGame() {
+//        controller.initialGamePreparations();
+//    }
 
     public static void main(String[] args) {
         launch(args);

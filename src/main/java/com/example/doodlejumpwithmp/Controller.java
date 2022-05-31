@@ -19,12 +19,12 @@ import java.util.*;
 
 public class Controller {
     private final Main main;
-    private final Doodle doodle;
+    private Doodle doodle;
     private final Map<Integer, ShadowDoodle> shadowDoodles = new HashMap<>();
 
     private final ArrayList<Platform> platforms = new ArrayList<>();
     private final ArrayList<String> input = new ArrayList<>();
-    private int interval = 100;
+    private int interval;
     private boolean gameOver = false;
     private boolean isServer = false; // null if single player. True if user is host.
     private boolean isClient = false;
@@ -96,10 +96,22 @@ public class Controller {
 
     public Controller(Main main) {
         this.main = main;
-        this.doodle = new Doodle(Main.doodleImage);
     }
 
+    /*public void setDefaultFieldValues() {
+        doodle = new Doodle(Main.doodleImage);
+        random = new Random();
+        counter = 0;
+        score = 0;
+        input.clear();
+        platforms.clear();
+        gameOver = false;
+        isServer = false;
+        isClient = false;
+    }*/
+
     public void initialGamePreparations() {
+        doodle = new Doodle(Main.doodleImage);
         Platform oldPlatform = new Platform(Main.platformImage);
         oldPlatform.setPosition(185, Main.SCREEN_HEIGHT - 15);
         platforms.add(oldPlatform);
@@ -210,7 +222,7 @@ public class Controller {
             for (Platform platform: platforms) {
                 platform.setPosition(platform.getX(), platform.getY() - doodle.getDiffY());
             }
-            if (platforms.get(0).getY() < -100) makeGameOver();
+            if (platforms.get(0).getY() < -150) makeGameOver();
         }
     }
 

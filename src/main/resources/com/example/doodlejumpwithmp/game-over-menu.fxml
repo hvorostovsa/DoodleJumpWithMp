@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Group xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.doodlejumpwithmp.GameOverMenuController">
+   <children>
+      <AnchorPane prefHeight="700.0" prefWidth="450.0">
+         <children>
+            <ImageView fitHeight="700.0" fitWidth="450.0" layoutX="113.0" layoutY="254.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <image>
+                  <Image url="@background.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="120.0" fitWidth="180.0" layoutX="135.0" layoutY="270.0" onMouseClicked="#restartClick" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Button_Mouth.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="236.0" fitWidth="356.0" layoutX="61.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Logo.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="178.0" layoutY="346.0" onMouseClicked="#textOnRestartButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Restart" textAlignment="CENTER" wrappingWidth="96.39996337890625" AnchorPane.bottomAnchor="355.0">
+               <font>
+                  <Font name="Times New Roman" size="18.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="120.0" fitWidth="180.0" layoutX="136.0" layoutY="435.0" onMouseClicked="#exitClick" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Button_Mouth.png" />
+               </image>
+            </ImageView>
+            <Text fill="WHITE" layoutX="156.0" layoutY="511.0" onMouseClicked="#textOnExitButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Exit to Main Menu" textAlignment="CENTER" wrappingWidth="139.5999755859375" AnchorPane.bottomAnchor="185.1064453125">
+               <font>
+                  <Font name="Times New Roman" size="18.0" />
+               </font>
+            </Text>
+            <Text fx:id="scoreText" layoutX="135.0" layoutY="637.0" strokeType="OUTSIDE" strokeWidth="0.0">
+               <font>
+                  <Font name="Times New Roman" size="28.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+   </children>
+</Group>
