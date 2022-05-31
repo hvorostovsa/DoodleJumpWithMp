@@ -15,7 +15,6 @@ public class ClientServerController {
 
     private String ip;
     private int port;
-    //private ScreenMode screenMode;
     private Controller controller;
     private Main main;
 
@@ -23,14 +22,6 @@ public class ClientServerController {
         this.controller = controller;
         this.main = main;
     }
-
-//    public ScreenMode getScreenMode() {
-//        return screenMode;
-//    }
-//
-//    public void setScreenMode(ScreenMode screenMode) {
-//        this.screenMode = screenMode;
-//    }
 
     public int getPort() {
         return port;

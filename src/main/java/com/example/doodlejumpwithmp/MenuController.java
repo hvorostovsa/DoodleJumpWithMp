@@ -1,8 +1,6 @@
 package com.example.doodlejumpwithmp;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.stage.Stage;
 
 public class MenuController {
     private Main main;

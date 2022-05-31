@@ -98,18 +98,6 @@ public class Controller {
         this.main = main;
     }
 
-    /*public void setDefaultFieldValues() {
-        doodle = new Doodle(Main.doodleImage);
-        random = new Random();
-        counter = 0;
-        score = 0;
-        input.clear();
-        platforms.clear();
-        gameOver = false;
-        isServer = false;
-        isClient = false;
-    }*/
-
     public void initialGamePreparations() {
         doodle = new Doodle(Main.doodleImage);
         Platform oldPlatform = new Platform(Main.platformImage);

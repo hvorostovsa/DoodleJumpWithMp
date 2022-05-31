@@ -2,22 +2,15 @@ package com.example.doodlejumpwithmp;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 
 public class ClientMenuController extends MenuController {
 
     private Main main;
-    //private Controller controller;
 
     private ClientServerController csc;
 
-//    private String ip;
-//    private int port;
-
-
     public void initData(Main main, Controller controller, ClientServerController csc) {
         this.main = main;
-        //this.controller = controller;
         this.csc = csc;
     }
 
@@ -39,7 +32,7 @@ public class ClientMenuController extends MenuController {
     void submitClick() {
         csc.setIp(topTextField.getText());
         csc.setPort(Integer.parseInt(bottomTextField.getText()));
-        //System.out.println(ip + ":" + port);
+        System.out.println(csc.getIp() + ":" + csc.getPort());
         csc.createClient();
     }
 
