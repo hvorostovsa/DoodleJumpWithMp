@@ -199,9 +199,8 @@ public class Main extends Application {
         stage.show();
     }
 
-    private Scene createScene(ScreenMode screenMode) {
+    private Scene createScene(ScreenMode screenMode) throws IOException {
         FXMLLoader loader;
-        Group root = new Group();
 
         if (screenMode == ScreenMode.START_MENU)
             loader = new FXMLLoader(Main.class.getResource("start-menu.fxml"));
@@ -215,13 +214,11 @@ public class Main extends Application {
             loader = new FXMLLoader(Main.class.getResource("client-room.fxml"));
         else throw new IllegalStateException("File for " + screenMode + "not found");
 
-        try {
-            root = loader.load();
-            MenuController menuController = loader.getController();
-            menuController.initData(this, gameController, clientServerController);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        Group root = loader.load();
+        MenuController menuController = loader.getController();
+        menuController.initData(this, gameController, clientServerController);
+
 
         return new Scene(root, Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
     }

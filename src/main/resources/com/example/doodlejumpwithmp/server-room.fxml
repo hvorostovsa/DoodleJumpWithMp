@@ -21,7 +21,7 @@
                   <Image url="@Button_Mouth.png" />
                </image>
             </ImageView>
-            <Text fill="WHITE" layoutX="54.0" layoutY="525.0" onMouseClicked="#textOnSubmitButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Submit" textAlignment="CENTER" wrappingWidth="96.39996337890625" AnchorPane.bottomAnchor="171.1064453125">
+            <Text fill="WHITE" layoutX="54.0" layoutY="525.0" onMouseClicked="#textOnSubmitButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Submit" textAlignment="CENTER" wrappingWidth="96.39996337890625">
                <font>
                   <Font name="Times New Roman" size="18.0" />
                </font>
@@ -31,7 +31,7 @@
                   <Image url="@Button_Mouth.png" />
                </image>
             </ImageView>
-            <Text fill="WHITE" layoutX="298.0" layoutY="526.0" onMouseClicked="#textOnStartButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Start Game" textAlignment="CENTER" wrappingWidth="96.39996337890625" AnchorPane.bottomAnchor="170.1064453125">
+            <Text fill="WHITE" layoutX="298.0" layoutY="525.0" onMouseClicked="#textOnStartButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Start Game" textAlignment="CENTER" wrappingWidth="96.39996337890625">
                <font>
                   <Font name="Times New Roman" size="18.0" />
                </font>
@@ -41,7 +41,7 @@
                   <Image url="@Button_Mouth.png" />
                </image>
             </ImageView>
-            <Text fill="WHITE" layoutX="202.0" layoutY="612.0" onMouseClicked="#textOnBackButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Back" textAlignment="CENTER" wrappingWidth="46.79998779296875" AnchorPane.topAnchor="597.7421875">
+            <Text fill="WHITE" layoutX="202.0" layoutY="615.0" onMouseClicked="#textOnBackButtonClick" strokeType="OUTSIDE" strokeWidth="0.0" text="Back" textAlignment="CENTER" wrappingWidth="46.79998779296875">
                <font>
                   <Font name="Times New Roman" size="16.0" />
                </font>
@@ -51,9 +51,9 @@
                   <Image url="@Nice_TextField.png" />
                </image>
             </ImageView>
-            <TextField fx:id="topTextField" alignment="CENTER" layoutX="100.0" layoutY="182.0" prefHeight="25.0" prefWidth="250.0" promptText="IP: 999.999.999.999" style="-fx-background-color: none; -fx-border-color: #26942a; -fx-border-radius: 10; -fx-border-width: 3; -fx-text-fill: #575aad;">
+            <TextField fx:id="topTextField" alignment="CENTER" layoutX="100.0" layoutY="182.0" prefHeight="31.0" prefWidth="250.0" promptText="IP: 999.999.999.999" style="-fx-background-color: none; -fx-border-color: #26942a; -fx-border-radius: 10; -fx-border-width: 1; -fx-text-fill: #575aad;">
                <font>
-                  <Font name="Times New Roman" size="13.0" />
+                  <Font name="Times New Roman" size="14.0" />
                </font>
                <effect>
                   <Lighting light="$null">
@@ -68,9 +68,9 @@
                   <Image url="@Nice_TextField.png" />
                </image>
             </ImageView>
-            <TextField fx:id="bottomTextField" alignment="CENTER" layoutX="100.0" layoutY="328.0" prefHeight="25.0" prefWidth="250.0" promptText="Port: 99999" style="-fx-background-color: none; -fx-border-color: #26942a; -fx-border-radius: 10; -fx-border-width: 3; -fx-text-fill: #575aad;">
+            <TextField fx:id="bottomTextField" alignment="CENTER" layoutX="100.0" layoutY="328.0" prefHeight="31.0" prefWidth="250.0" promptText="Port: 99999" style="-fx-background-color: none; -fx-border-color: #26942a; -fx-border-radius: 10; -fx-border-width: 1; -fx-text-fill: #575aad;">
                <font>
-                  <Font name="Times New Roman" size="13.0" />
+                  <Font name="Times New Roman" size="14.0" />
                </font>
                <effect>
                   <Lighting light="$null">
