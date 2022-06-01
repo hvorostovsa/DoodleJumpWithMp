@@ -1,5 +1,8 @@
 package com.example.doodlejumpwithmp;
 
+import com.example.doodlejumpwithmp.controller.ClientServerController;
+import com.example.doodlejumpwithmp.controller.GameController;
+import com.example.doodlejumpwithmp.controller.MenuController;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
 import com.example.doodlejumpwithmp.model.platform.Platform;
@@ -11,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -24,9 +28,9 @@ public class Main extends Application {
     public final static int SCREEN_HEIGHT = 700;
 
     private GraphicsContext gc;
-    private Controller controller;
-    private ClientServerController csc;
-    private ArrayList<String> controlList;
+    private GameController gameController;
+    private ClientServerController clientServerController;
+    private ArrayList<KeyCode> controlList;
     private ScreenMode screenMode = ScreenMode.START_MENU;
     private boolean screenModeIsChanged = true;
 
@@ -35,27 +39,27 @@ public class Main extends Application {
             SCREEN_WIDTH, SCREEN_HEIGHT, false, false
     );
 
-    static Image platformImage = new Image(
+    public static Image platformImage = new Image(
             MainUtils.getFilePathFromResources("Normal_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
-    static Image movingPlatformImage = new Image(
+    public static Image movingPlatformImage = new Image(
             MainUtils.getFilePathFromResources("Moving_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
-    static Image oneJumpPlatformImage = new Image(
+    public static Image oneJumpPlatformImage = new Image(
             MainUtils.getFilePathFromResources("One_jump_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
-    static Image zeroJumpPlatformImage = new Image(
+    public static Image zeroJumpPlatformImage = new Image(
             MainUtils.getFilePathFromResources("Zero_jump_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false
     );
-    static Image doodleImage = new Image(
+    public static Image doodleImage = new Image(
             MainUtils.getFilePathFromResources("Doodle.png"),
             Doodle.getWidth(), Doodle.getHeight(), false, false
     );
-    static Image shadowDoodleImage = new Image(
+    public static Image shadowDoodleImage = new Image(
             MainUtils.getFilePathFromResources("ShadowDoodle.png"),
             ShadowDoodle.getWidth(), ShadowDoodle.getHeight(), false, false
     );
@@ -70,16 +74,16 @@ public class Main extends Application {
 
     public void repaintScene() {
         gc.drawImage(background, 0, 0);
-        for (Platform platform : controller.getPlatforms()) {
+        for (Platform platform : gameController.getPlatforms()) {
             repaintPlatforms(platform);
         }
 
         repaintScore();
         repaintShadowDoodles();
-        repaintDoodle(controller.getDoodle());
+        repaintDoodle(gameController.getDoodle());
 
-        if (controller.isDoodleFall()) {
-          screenMode = ScreenMode.GAME_OVER_MENU;
+        if (gameController.isDoodleFall()) {
+            screenMode = ScreenMode.GAME_OVER_MENU;
             screenModeIsChanged = true;
         }
     }
@@ -97,7 +101,7 @@ public class Main extends Application {
     }
 
     private void repaintShadowDoodles() {
-        for (ShadowDoodle shadowDoodle : controller.getShadowDoodles().values()) {
+        for (ShadowDoodle shadowDoodle : gameController.getShadowDoodles().values()) {
             switch (shadowDoodle.getDoodleSide()) {
                 case RIGHT -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
                 case LEFT -> gc.drawImage(
@@ -118,13 +122,13 @@ public class Main extends Application {
         Font font = new Font("Times New Roman", 20);
         gc.setFont(font);
         gc.setFill(Color.BLACK);
-        gc.fillText(controller.getScoreString(), 20, 20);
+        gc.fillText(gameController.getScoreString(), 20, 20);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        controller = new Controller(this);
-        csc = new ClientServerController(this, controller);
+        gameController = new GameController(this);
+        clientServerController = new ClientServerController(this, gameController);
         stage.setResizable(false);
 
         Group gameRoot = new Group();
@@ -143,19 +147,18 @@ public class Main extends Application {
 
         gc.drawImage(background, 0, 0);
 
-        controlList = controller.getInput();
+        controlList = gameController.getInput();
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (screenModeIsChanged) {
-                    System.out.println(1);
                     screenModeIsChanged = false;
                     switch (screenMode) {
                         case SINGLE_GAME, MULTIPLAYER_GAME -> stage.setScene(scene);
                         case GAME_OVER_MENU -> {
                             group.getChildren().remove(scoreText);
-                            scoreText.setText(controller.getScoreString());
+                            scoreText.setText(gameController.getScoreString());
                             group.getChildren().add(scoreText);
                             reinitializeGame(); // TODO wrap in method
                             stage.setScene(gameOverScene);
@@ -167,33 +170,30 @@ public class Main extends Application {
                     }
                 }
                 if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME)
-                    controller.update();
+                    gameController.update();
                 else if (screenMode == ScreenMode.SERVER_ROOM)
-                    csc.beforeConnectionStart(true);
+                    clientServerController.beforeConnectionStart(true);
                 else if (screenMode == ScreenMode.CLIENT_ROOM)
-                    csc.beforeConnectionStart();
+                    clientServerController.beforeConnectionStart();
 
             }
         };
         timer.start();
 
         scene.setOnKeyPressed(event -> {
-            String code = event.getCode().toString();
-            if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
-                if (code.equals("RIGHT") || code.equals("LEFT")) {
-                    if (!controlList.contains(code)) {
-                        controlList.add(code);
-                    }
+            KeyCode code = event.getCode();
+            if (code == KeyCode.RIGHT || code == KeyCode.LEFT) {
+                if (!controlList.contains(code)) {
+                    controlList.add(code);
                 }
             }
+
         });
 
         scene.setOnKeyReleased(event -> {
-            if (screenMode == ScreenMode.SINGLE_GAME || screenMode == ScreenMode.MULTIPLAYER_GAME) {
-                String code = event.getCode().toString();
-                if (code.equals("RIGHT") || code.equals("LEFT"))
-                    controlList.remove(code);
-            }
+            KeyCode code = event.getCode();
+            if (code == KeyCode.RIGHT || code == KeyCode.LEFT)
+                controlList.remove(code);
         });
 
         stage.show();
@@ -218,7 +218,7 @@ public class Main extends Application {
         try {
             root = loader.load();
             MenuController menuController = loader.getController();
-            menuController.initData(this, controller, csc);
+            menuController.initData(this, gameController, clientServerController);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -228,16 +228,16 @@ public class Main extends Application {
 
     private Text createScoreText() {
         Text score = new Text();
-        Font font = new Font("Times New Roman", 18);
+        Font font = new Font("Times New Roman", 24);
         score.setFont(font);
-        score.setX(180);
+        score.setX(150);
         score.setY(600);
         return score;
     }
 
     private void reinitializeGame() {
-        controller = new Controller(this);
-        controlList = controller.getInput();
+        gameController = new GameController(this);
+        controlList = gameController.getInput();
     }
 
     public static void main(String[] args) {

@@ -1,8 +1,9 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.controller;
 
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.example.doodlejumpwithmp.Main;
 import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.doodle.ShadowDoodle;
@@ -10,20 +11,21 @@ import com.example.doodlejumpwithmp.model.platform.MovingPlatform;
 import com.example.doodlejumpwithmp.model.platform.OneJumpPlatform;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import com.example.doodlejumpwithmp.model.platform.ZeroJumpPlatform;
-import com.example.doodlejumpwithmp.model.serverwork.Client;
-import com.example.doodlejumpwithmp.model.serverwork.Server;
-import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
-import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
+import com.example.doodlejumpwithmp.controller.serverwork.Client;
+import com.example.doodlejumpwithmp.controller.serverwork.Server;
+import com.example.doodlejumpwithmp.controller.serverwork.ServerKey;
+import com.example.doodlejumpwithmp.controller.serverwork.ServerParameter;
+import javafx.scene.input.KeyCode;
 
 import java.util.*;
 
-public class Controller {
+public class GameController {
     private final Main main;
     private Doodle doodle;
     private final Map<Integer, ShadowDoodle> shadowDoodles = new HashMap<>();
 
     private final ArrayList<Platform> platforms = new ArrayList<>();
-    private final ArrayList<String> input = new ArrayList<>();
+    private final ArrayList<KeyCode> input = new ArrayList<>();
     private int interval;
     private boolean gameOver = false;
     private boolean isServer = false; // null if single player. True if user is host.
@@ -90,11 +92,11 @@ public class Controller {
         return gameOver;
     }
 
-    public ArrayList<String> getInput() {
+    public ArrayList<KeyCode> getInput() {
         return input;
     }
 
-    public Controller(Main main) {
+    public GameController(Main main) {
         this.main = main;
     }
 
@@ -192,7 +194,7 @@ public class Controller {
 
     public String getScoreString() {
         int intScore = (int) Math.floor(score);
-        return "Your score:" + intScore;
+        return "Your score: " + intScore;
     }
 
     public void dragScreen() {
@@ -223,13 +225,13 @@ public class Controller {
     }
 
     private void updateCoordinateX() {
-        if (input.contains("RIGHT")) {
-            if (input.contains("LEFT")) {
+        if (input.contains(KeyCode.RIGHT)) {
+            if (input.contains(KeyCode.LEFT)) {
                 doodle.moveX(Direction.NONE); // no move
             } else {
                 doodle.moveX(Direction.RIGHT); // move right
             }
-        } else if (input.contains("LEFT")) {
+        } else if (input.contains(KeyCode.LEFT)) {
             doodle.moveX(Direction.LEFT); // move left
         } else {
             doodle.moveX(Direction.NONE); // no move

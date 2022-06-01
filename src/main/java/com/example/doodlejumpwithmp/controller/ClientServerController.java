@@ -1,10 +1,12 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.controller;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.example.doodlejumpwithmp.model.serverwork.Client;
-import com.example.doodlejumpwithmp.model.serverwork.Server;
-import com.example.doodlejumpwithmp.model.serverwork.ServerKey;
-import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
+import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.ScreenMode;
+import com.example.doodlejumpwithmp.controller.serverwork.Client;
+import com.example.doodlejumpwithmp.controller.serverwork.Server;
+import com.example.doodlejumpwithmp.controller.serverwork.ServerKey;
+import com.example.doodlejumpwithmp.controller.serverwork.ServerParameter;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -15,11 +17,11 @@ public class ClientServerController {
 
     private String ip;
     private int port;
-    private Controller controller;
-    private Main main;
+    private final GameController gameController;
+    private final Main main;
 
-    public ClientServerController(Main main, Controller controller) {
-        this.controller = controller;
+    public ClientServerController(Main main, GameController gameController) {
+        this.gameController = gameController;
         this.main = main;
     }
 
@@ -40,8 +42,8 @@ public class ClientServerController {
     }
 
     public void beforeConnectionStart(boolean isServer) {
-        controller.setIsServer(isServer);
-        controller.setIsClient(!isServer);
+        gameController.setIsServer(isServer);
+        gameController.setIsClient(!isServer);
         if (isServer) {
             beforeStartServerWork();
         } else {
@@ -55,7 +57,7 @@ public class ClientServerController {
 
 
     private void beforeStartServerWork() {
-        Server server = controller.getServer();
+        Server server = gameController.getServer();
         if (server != null) {
             LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
             JSONObject response;
@@ -66,7 +68,7 @@ public class ClientServerController {
                 switch (serverKey) {
                     case CONNECTED -> {
                         int newClientId = response.getIntValue(ServerParameter.CLIENT_ID.toString());
-                        controller.addShadowDoodle(newClientId);
+                        gameController.addShadowDoodle(newClientId);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + serverKey);
                 }
@@ -75,7 +77,7 @@ public class ClientServerController {
     }
 
     private void beforeStartClientWork() {
-        Client client = controller.getClient();
+        Client client = gameController.getClient();
         if (client != null) {
             LinkedList<JSONObject> receivedRequests = client.getReceivedRequests();
             JSONObject response;
@@ -96,19 +98,19 @@ public class ClientServerController {
                         List<Integer> list = Stream.of(connections).filter(it -> it != clientId).toList();
                         client.getConnections().addAll(list);
                         for (Integer id : list) {
-                            controller.addShadowDoodle(id);
+                            gameController.addShadowDoodle(id);
                         }
                     }
                     case NEW_USER_ADDED -> {
                         int newClientId = response.getIntValue(ServerParameter.CLIENT_ID.toString());
-                        controller.addShadowDoodle(newClientId);
+                        gameController.addShadowDoodle(newClientId);
                     }
                     case START_GAME -> {
                         gameStarted = true;
                         long seed = response.getLong(ServerParameter.SEED.toString());
                         System.out.println("Seed: " + seed);
-                        controller.setSeed(seed);
-                        controller.initialGamePreparations();
+                        gameController.setSeed(seed);
+                        gameController.initialGamePreparations();
                         main.setScreenMode(ScreenMode.MULTIPLAYER_GAME);
                         main.changeScreenMode();
                     }
@@ -119,14 +121,14 @@ public class ClientServerController {
     }
 
     public void createServer() {
-        Server server = controller.getServer();
+        Server server = gameController.getServer();
         if (server != null && !(server.getIp().equals(ip) && port == server.getPort())) { // if new server ip:port
             server.close();
             server = null;
         }
         if (server == null) {
             try {
-                controller.setServer(new Server(ip, port));
+                gameController.setServer(new Server(ip, port));
             } catch (IOException exception) {
                 System.out.println("incorrect address " + ip + ":" + port);
             }
@@ -134,7 +136,7 @@ public class ClientServerController {
     }
 
     public void createClient() {
-        Client client = controller.getClient();
+        Client client = gameController.getClient();
         if (client != null && !(client.getIp().equals(ip) && port == client.getPort())) { // if new client ip:port
             client.close();
             client = null;
@@ -142,7 +144,7 @@ public class ClientServerController {
         if (client == null) {
             try {
                 client = new Client(ip, port);
-                controller.setClient(client);
+                gameController.setClient(client);
                 client.sendConnected();
             } catch (IOException exception) {
                 System.out.println("can't connect to server " + ip + ":" + port);

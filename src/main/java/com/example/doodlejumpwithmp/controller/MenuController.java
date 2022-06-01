@@ -1,21 +1,25 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.controller;
 
+import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.ScreenMode;
+import com.example.doodlejumpwithmp.controller.ClientServerController;
+import com.example.doodlejumpwithmp.controller.GameController;
 import javafx.fxml.FXML;
 
 public class MenuController {
     private Main main;
-    private Controller controller;
+    private GameController gameController;
 
-    public void initData(Main main, Controller controller, ClientServerController csc) {
+    public void initData(Main main, GameController gameController, ClientServerController clientServerController) {
         this.main = main;
-        this.controller = controller;
+        this.gameController = gameController;
     }
 
     @FXML
     void singleGameClick() {
         main.setScreenMode(ScreenMode.SINGLE_GAME);
         main.changeScreenMode();
-        controller.initialGamePreparations();
+        gameController.initialGamePreparations();
     }
 
     @FXML

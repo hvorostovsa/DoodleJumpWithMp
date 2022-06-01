@@ -1,4 +1,4 @@
-package com.example.doodlejumpwithmp.model.serverwork;
+package com.example.doodlejumpwithmp.controller.serverwork;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;

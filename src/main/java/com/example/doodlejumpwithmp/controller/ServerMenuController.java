@@ -1,19 +1,21 @@
-package com.example.doodlejumpwithmp;
+package com.example.doodlejumpwithmp.controller;
 
-import com.example.doodlejumpwithmp.model.serverwork.Server;
+import com.example.doodlejumpwithmp.Main;
+import com.example.doodlejumpwithmp.ScreenMode;
+import com.example.doodlejumpwithmp.controller.serverwork.Server;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 public class ServerMenuController extends MenuController {
     private Main main;
-    private Controller controller;
+    private GameController gameController;
 
-    private ClientServerController csc;
+    private ClientServerController clientServerController;
 
-    public void initData(Main main, Controller controller, ClientServerController csc) {
+    public void initData(Main main, GameController gameController, ClientServerController clientServerController) {
         this.main = main;
-        this.controller = controller;
-        this.csc = csc;
+        this.gameController = gameController;
+        this.clientServerController = clientServerController;
     }
 
     @FXML
@@ -26,30 +28,30 @@ public class ServerMenuController extends MenuController {
     void backButtonClick() {
         main.setScreenMode(ScreenMode.CONNECTION_MENU);
         main.changeScreenMode();
-        csc.setIp(null);
-        csc.setPort(-1);
+        clientServerController.setIp(null);
+        clientServerController.setPort(-1);
     }
 
     @FXML
     void startGameClick() {
-        Server server = controller.getServer();
+        Server server = gameController.getServer();
         server.stopAccept();
         System.out.println("Send start game");
         long seed = System.currentTimeMillis();
-        controller.setSeed(seed);
+        gameController.setSeed(seed);
         System.out.println("Seed: " + seed);
         server.sendStartGame(seed);
         System.out.println("Set multiplayer game");
-        controller.initialGamePreparations();
+        gameController.initialGamePreparations();
         main.setScreenMode(ScreenMode.MULTIPLAYER_GAME);
         main.changeScreenMode();
     }
 
     @FXML
     void submitClick() {
-        csc.setIp(topTextField.getText());
-        csc.setPort(Integer.parseInt(bottomTextField.getText()));
-        csc.createServer();
+        clientServerController.setIp(topTextField.getText());
+        clientServerController.setPort(Integer.parseInt(bottomTextField.getText()));
+        clientServerController.createServer();
     }
 
     @FXML

@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.example.doodlejumpwithmp.Main;
 import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.platform.Platform;
-import com.example.doodlejumpwithmp.model.serverwork.ServerParameter;
+import com.example.doodlejumpwithmp.controller.serverwork.ServerParameter;
 import javafx.scene.image.Image;
 
 import java.util.List;

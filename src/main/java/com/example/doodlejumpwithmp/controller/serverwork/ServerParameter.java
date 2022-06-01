@@ -1,4 +1,4 @@
-package com.example.doodlejumpwithmp.model.serverwork;
+package com.example.doodlejumpwithmp.controller.serverwork;
 
 public enum ServerParameter {
     // general

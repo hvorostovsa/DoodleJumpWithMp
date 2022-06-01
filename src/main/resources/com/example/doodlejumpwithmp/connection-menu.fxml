@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<Group xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.doodlejumpwithmp.ConnectionMenuController">
+<Group xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.doodlejumpwithmp.controller.ConnectionMenuController">
    <children>
       <AnchorPane prefHeight="700.0" prefWidth="450.0">
          <children>
