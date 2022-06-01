@@ -42,7 +42,6 @@ public class ServerMenuController extends MenuController {
         System.out.println("Seed: " + seed);
         server.sendStartGame(seed);
         System.out.println("Set multiplayer game");
-        gameController.initialGamePreparations();
         main.setScreenMode(ScreenMode.MULTIPLAYER_GAME);
         main.changeScreenMode();
     }

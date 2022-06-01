@@ -153,9 +153,13 @@ public class Main extends Application {
             @Override
             public void handle(long now) {
                 if (screenModeIsChanged) {
+                    System.out.println(1);
                     screenModeIsChanged = false;
                     switch (screenMode) {
-                        case SINGLE_GAME, MULTIPLAYER_GAME -> stage.setScene(scene);
+                        case SINGLE_GAME, MULTIPLAYER_GAME -> {
+                            gameController.initialGamePreparations();
+                            stage.setScene(scene);
+                        }
                         case GAME_OVER_MENU -> {
                             group.getChildren().remove(scoreText);
                             scoreText.setText(gameController.getScoreString());

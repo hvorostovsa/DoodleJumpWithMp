@@ -8,18 +8,15 @@ import javafx.fxml.FXML;
 
 public class MenuController {
     private Main main;
-    private GameController gameController;
 
     public void initData(Main main, GameController gameController, ClientServerController clientServerController) {
         this.main = main;
-        this.gameController = gameController;
     }
 
     @FXML
     void singleGameClick() {
         main.setScreenMode(ScreenMode.SINGLE_GAME);
         main.changeScreenMode();
-        gameController.initialGamePreparations();
     }
 
     @FXML

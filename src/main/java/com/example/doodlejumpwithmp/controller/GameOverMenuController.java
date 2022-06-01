@@ -6,11 +6,9 @@ import javafx.fxml.FXML;
 
 public class GameOverMenuController extends MenuController {
     private Main main;
-    private GameController gameController;
 
     public void initData(Main main, GameController gameController, ClientServerController clientServerController) {
         this.main = main;
-        this.gameController = gameController;
     }
 
     @FXML
@@ -23,7 +21,6 @@ public class GameOverMenuController extends MenuController {
     void restartClick() {
         main.setScreenMode(ScreenMode.SINGLE_GAME);
         main.changeScreenMode();
-        gameController.initialGamePreparations();
     }
 
     @FXML
