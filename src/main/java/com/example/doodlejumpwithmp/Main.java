@@ -237,8 +237,7 @@ public class Main extends Application {
     }
 
     private void reinitializeGame() {
-        gameController = new GameController(this);
-        controlList = gameController.getInput();
+        gameController.setDefaultValues();
     }
 
     public static void main(String[] args) {

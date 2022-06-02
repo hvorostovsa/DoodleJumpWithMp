@@ -100,6 +100,20 @@ public class GameController {
         this.main = main;
     }
 
+    public void setDefaultValues() {
+        shadowDoodles.clear();
+        platforms.clear();
+        input.clear();
+        gameOver = false;
+        isClient = false;
+        isServer = false;
+        server = null;
+        client = null;
+        counter = 0;
+        score = 0;
+        random = new Random();
+    }
+
     public void initialGamePreparations() {
         doodle = new Doodle(Main.doodleImage);
         Platform oldPlatform = new Platform(Main.platformImage);

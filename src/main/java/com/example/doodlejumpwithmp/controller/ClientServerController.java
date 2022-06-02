@@ -110,7 +110,7 @@ public class ClientServerController {
                         long seed = response.getLong(ServerParameter.SEED.toString());
                         System.out.println("Seed: " + seed);
                         gameController.setSeed(seed);
-                        gameController.initialGamePreparations();
+                        //gameController.initialGamePreparations();
                         main.setScreenMode(ScreenMode.MULTIPLAYER_GAME);
                         main.changeScreenMode();
                     }
