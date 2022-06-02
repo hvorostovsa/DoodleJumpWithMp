@@ -29,10 +29,9 @@ public class ShadowDoodle extends Doodle {
         }
     }
 
-    @Override
     public void moveY(List<Platform> platforms) {
         if (isOnScreen()) {
-            super.moveY(platforms);
+            super.moveY(platforms, true);
         }
     }
 
@@ -61,6 +60,10 @@ public class ShadowDoodle extends Doodle {
     }
 
     public void moveX() {
+//        if (lastDirection != null) {
+//            moveX(lastDirection);
+//            lastDirection = null;
+//        }
         moveX(lastDirection);
     }
 
@@ -76,6 +79,12 @@ public class ShadowDoodle extends Doodle {
         JSONObject result = lastDataGot;
         lastDataGot = null;
         return result;
+    }
+
+    private double getYOnScreen(double y, double mainDoodleScore) {
+        // get realY by scores' difference
+        double yOffset = this.score - mainDoodleScore;
+        return y - yOffset;
     }
 
     public void updateData(double score, JSONObject data) {
@@ -97,9 +106,7 @@ public class ShadowDoodle extends Doodle {
             setDiffY(data.getDouble(ServerParameter.DIFF_Y.toString()));
             this.score = data.getDouble(ServerParameter.SCORE.toString());
 
-            // set realY by scores' difference
-            double YOffset = this.score - score;
-            double realY = this.getY() - YOffset;
+            double realY = getYOnScreen(getY(), score);
             this.setY(realY);
         }
     }

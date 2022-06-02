@@ -15,23 +15,23 @@ public class Doodle {
     private static final int BASE_INDENT_LEFT_LEG = 7;
     private static final int BASE_INDENT_RIGHT_LEG = 22;
 
+    private static final int MAX_MOVE_SPEED = 7;
+    private static final int MIN_MOVE_SPEED = 4;
+    private static final double ACCELERATION = 0.5;
+
     private double indentLeftLeg = BASE_INDENT_LEFT_LEG;
     private double indentRightLeg = BASE_INDENT_RIGHT_LEG;
 
-    private final int maxMoveSpeed = 7;
-    private final int minMoveSpeed = 4;
-    private final double acceleration = 0.5;
     private Direction moveDirection = Direction.NONE; // 0 - not moving; 1 - moving right; -1 - moving left
     private double moveSpeed = 0;
 
     private final Image characterImage;
 
-    private double coordinateX = 0;
-    private double coordinateY = 0;
+    private double coordinateX;
+    private double coordinateY;
     private double diffY = 0;
-    private boolean fall = false;
     private boolean loose = false;
-    private Direction doodleSide = Direction.RIGHT; // 1 => doodle sees to the right side. -1 => doodle sees to the left side
+    private Direction doodleSide = Direction.RIGHT; // 1 => doodle sees to the right side. -1 => to the left side
 
     public void setLoose(boolean loose) {
         this.loose = loose;
@@ -116,31 +116,39 @@ public class Doodle {
         diffY = -11;
     }
 
-    public void moveY(List<Platform> platforms) {
+    public void moveY(List<Platform> platforms, boolean isShadow) {
         diffY += 0.3;
         coordinateY += diffY;
-        fall = diffY > 0;
-        for (Platform platform : platforms) {
-            if (fall && intersectPlatform(platform)) {
-                if (platform.canJumpToPlatform()) {
-                    jump(); // make jump
-                    break;
+        if (diffY > 0) {
+            for (Platform platform : platforms) {
+                if (intersectPlatform(platform) && platform.canJumpToPlatform()) {
+                    if (isShadow || platform.jumpFromPlatform()) {
+                        jump();
+                        break;
+                    }
                 }
             }
         }
     }
 
+    public void moveY(List<Platform> platforms) {
+        moveY(platforms, false);
+    }
+
     public void moveX(Direction newDirection) {
-        // newDirection: 1 => move right, -1 => move left, 0 => no move
         if (newDirection != Direction.NONE) { // if need to move
+            // * make move
             doodleSide = newDirection;
             if (newDirection == moveDirection) {
-                moveSpeed = Math.min(moveSpeed + acceleration, maxMoveSpeed);
+                moveSpeed = Math.min(moveSpeed + ACCELERATION, MAX_MOVE_SPEED);
             } else {
-                moveSpeed = minMoveSpeed;
+                moveSpeed = MIN_MOVE_SPEED;
                 moveDirection = newDirection;
             }
             coordinateX += moveDirection.getValue() * moveSpeed;
+            // *
+
+            // * change indents if doodleImage mirrored
             if (moveDirection == Direction.RIGHT) { // move right
                 indentLeftLeg = BASE_INDENT_LEFT_LEG;
                 indentRightLeg = BASE_INDENT_RIGHT_LEG;
@@ -148,6 +156,7 @@ public class Doodle {
                 indentLeftLeg = BASE_INDENT_RIGHT_LEG;
                 indentRightLeg = BASE_INDENT_LEFT_LEG;
             }
+            // *
         } else {
             moveDirection = newDirection;
         }

@@ -66,7 +66,7 @@ public class Server extends Thread {
             while (!stopped) {  // endless checking for new connections
                 Socket socket = server.accept();  // Block program until new connection
                 try {
-                    serverList.add(new ServerCell(this, socket)); // add new connection
+                    serverList.add(new ServerCell(socket)); // add new connection
                 } catch (IOException e) {
                     socket.close();  // Close socket if it failed
                 }
@@ -118,16 +118,14 @@ public class Server extends Thread {
         }
     }
 
-    static class ServerCell extends Thread {  // private
-        private final Server server;
+    private class ServerCell extends Thread {
         private final Socket socket;
         private final BufferedReader in;
         private final BufferedWriter out;
         private int clientId; // technical final
         private boolean stopped = false;
 
-        public ServerCell(Server server, Socket socket) throws IOException {
-            this.server = server;
+        public ServerCell(Socket socket) throws IOException {
             this.socket = socket;
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -166,12 +164,14 @@ public class Server extends Thread {
             this.interrupt();
             try {
                 while (!stopped) {
-                    String responseString = read();
-                    JSONObject responseJsonObject = JSON.parseObject(responseString);
-                    handleResponse(responseJsonObject);
+                    try {
+                        String responseString = read();
+                        JSONObject responseJsonObject = JSON.parseObject(responseString);
+                        handleResponse(responseJsonObject);
+                    } catch (InterruptedIOException ignored) {
+                        // pass
+                    }
                 }
-            } catch (InterruptedIOException ignored) {
-
             } catch (IOException ignored) {
                 this.close();
             }
@@ -190,7 +190,7 @@ public class Server extends Thread {
             jsonObject.put(ServerParameter.CODE.toString(), ServerKey.SET_ID.getCode());
             jsonObject.put(ServerParameter.NEW_ID.toString(), clientId);
             JSONArray jsonArrayConnections = new JSONArray();
-            jsonArrayConnections.fluentAddAll(server.getConnections());
+            jsonArrayConnections.fluentAddAll(Server.this.getConnections());
             jsonObject.put(ServerParameter.CONNECTIONS.toString(), jsonArrayConnections);
             send(jsonObject.toString());
         }
@@ -228,17 +228,17 @@ public class Server extends Thread {
         }
 
         private void handleConnected(JSONObject response) {
-            clientId = server.getNewClientId();
-            server.getConnections().add(clientId);
+            clientId = Server.this.getNewClientId();
+            Server.this.getConnections().add(clientId);
             response.put(ServerParameter.CLIENT_ID.toString(), clientId);
             sendNewId();
-            server.sendNewUser(clientId);
-            server.addReceivedRequest(response);
+            Server.this.sendNewUser(clientId);
+            Server.this.addReceivedRequest(response);
         }
 
         private void handleNewInfo(JSONObject response) {
             response.put(ServerParameter.CLIENT_ID.toString(), clientId);
-            server.addReceivedRequest(response);
+            Server.this.addReceivedRequest(response);
         }
     }
 }

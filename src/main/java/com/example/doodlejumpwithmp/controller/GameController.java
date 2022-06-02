@@ -20,6 +20,9 @@ import javafx.scene.input.KeyCode;
 import java.util.*;
 
 public class GameController {
+    public static final int DOODLE_START_POS_X = 185;
+    public static final int DOODLE_START_POS_Y = 560;
+
     private final Main main;
     private Doodle doodle;
     private final Map<Integer, ShadowDoodle> shadowDoodles = new HashMap<>();
@@ -28,7 +31,7 @@ public class GameController {
     private final ArrayList<KeyCode> input = new ArrayList<>();
     private int interval;
     private boolean gameOver = false;
-    private boolean isServer = false; // null if single player. True if user is host.
+    private boolean isServer = false;
     private boolean isClient = false;
 
     private Server server;
@@ -117,9 +120,9 @@ public class GameController {
     public void initialGamePreparations() {
         doodle = new Doodle(Main.doodleImage);
         Platform oldPlatform = new Platform(Main.platformImage);
-        oldPlatform.setPosition(185, Main.SCREEN_HEIGHT - 15);
+        oldPlatform.setPosition(DOODLE_START_POS_X, Main.SCREEN_HEIGHT - 15);
         platforms.add(oldPlatform);
-        doodle.setPosition(185, 560);
+        doodle.setPosition(DOODLE_START_POS_X, DOODLE_START_POS_Y);
         double max = 0;
         while (max < Main.SCREEN_HEIGHT) {
             Platform newPlatform = placePlatform(oldPlatform);
@@ -132,6 +135,7 @@ public class GameController {
     public void addShadowDoodle(int clientId) {
         ShadowDoodle shadowDoodle = new ShadowDoodle(Main.shadowDoodleImage);
         shadowDoodle.setClientId(clientId);
+        shadowDoodle.setPosition(DOODLE_START_POS_X, DOODLE_START_POS_Y);
         shadowDoodles.put(clientId, shadowDoodle);
     }
 
@@ -207,17 +211,18 @@ public class GameController {
     }
 
     public String getScoreString() {
-        int intScore = (int) Math.floor(score);
+        int intScore = (int) score;
         return "Your score: " + intScore;
     }
 
     public void dragScreen() {
         if (doodle.getY() < 300) {
+            double offsetY = 300 - doodle.getY();
             doodle.setY(300);
-            for (Platform platform : platforms) {
-                platform.setPosition(platform.getX(), platform.getY() - doodle.getDiffY());
+            for (Platform platform: platforms) {
+                platform.setPosition(platform.getX(), platform.getY() + offsetY);
             }
-            score += doodle.getDiffY() * -1;
+            score += offsetY;
             Platform oldPlatform = platforms.get(platforms.size() - 1);
             if (!containsPlatform(oldPlatform, 0, interval * (-2)))
                 platforms.add(placePlatform(oldPlatform));
@@ -307,7 +312,6 @@ public class GameController {
         if (!gameOver) {
             for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
                 if (shadowDoodle.isOnScreen() && !shadowDoodle.getLoose()) {
-//                System.out.println("Yes, on screen");
                     shadowDoodle.moveY(platforms);
                     shadowDoodle.moveX();
                 }
@@ -322,6 +326,11 @@ public class GameController {
     }
 
     private void sendInfo() {
+//        try { // sleep for local testing. TODO delete on production
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         if (isServer) { // if server
             Map<Integer, JSONObject> map = new HashMap<>();
             for (ShadowDoodle shadowDoodle: shadowDoodles.values()) {
@@ -345,12 +354,12 @@ public class GameController {
     public void update() {
         dragScreen();
         updateDoodle();
-        updatePlatforms();
         if (++counter > 5) {
             counter = 0;
             new Thread(this::sendInfo).start();
         }
         updateShadowDoodles();
+        updatePlatforms();
         main.repaintScene();
         new Thread(this::getNewInfo).start();
     }

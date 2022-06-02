@@ -6,7 +6,7 @@ public class Platform {
     private static final int WIDTH = 70;
     private static final int HEIGHT = 15;
 
-    private double coordinateX; // package private. Getters and setters are bad!!
+    private double coordinateX;
     private double coordinateY;
     private final Image platformImage;
 
@@ -62,6 +62,11 @@ public class Platform {
 
     public boolean canJumpToPlatform() {
         return true;
+    }
+
+    public boolean jumpFromPlatform() {
+        // прям когда собираемся прыгнуть от этой платформы. true - если можем сделать прыжок
+        return canJumpToPlatform();
     }
 
     public void update() {

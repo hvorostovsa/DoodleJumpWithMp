@@ -11,11 +11,16 @@ public class OneJumpPlatform extends Platform {
 
     @Override
     public boolean canJumpToPlatform() {
-        if (haveJumped) {
-            return false;
+        return !haveJumped;
+    }
+
+    @Override
+    public boolean jumpFromPlatform() {
+        if (canJumpToPlatform()) {
+            moveOutFromTheScreen();
+            haveJumped = true;
+            return true;
         }
-        moveOutFromTheScreen();
-        haveJumped = true;
-        return true;
+        return false;
     }
 }

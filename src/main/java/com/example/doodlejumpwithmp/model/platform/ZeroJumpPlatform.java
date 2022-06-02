@@ -11,9 +11,14 @@ public class ZeroJumpPlatform extends Platform {
 
     @Override
     public boolean canJumpToPlatform() {
+        return false;
+    }
+
+    @Override
+    public boolean jumpFromPlatform() {
         if (!haveJumped) {
-            haveJumped = true;
             moveOutFromTheScreen();
+            haveJumped = true;
         }
         return false;
     }

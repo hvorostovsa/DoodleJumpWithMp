@@ -102,6 +102,7 @@ public class Main extends Application {
 
     private void repaintShadowDoodles() {
         for (ShadowDoodle shadowDoodle : gameController.getShadowDoodles().values()) {
+            if (shadowDoodle.getLoose()) continue;
             switch (shadowDoodle.getDoodleSide()) {
                 case RIGHT -> gc.drawImage(shadowDoodle.getImage(), shadowDoodle.getX(), shadowDoodle.getY());
                 case LEFT -> gc.drawImage(
@@ -191,7 +192,6 @@ public class Main extends Application {
                     controlList.add(code);
                 }
             }
-
         });
 
         scene.setOnKeyReleased(event -> {
