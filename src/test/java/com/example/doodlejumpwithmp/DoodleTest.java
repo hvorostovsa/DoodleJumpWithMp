@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DoodleTest {
 
@@ -51,6 +50,14 @@ public class DoodleTest {
 
     @Test
     public void intersectPlatformTest() {
+        Doodle doodle = new Doodle(null);
+        Platform platform = new Platform(null);
+        doodle.setPosition(120, 300);
+        platform.setPosition(doodle.getX() - 20, doodle.getY() + Doodle.HEIGHT - 5);
 
+        assertTrue(doodle.intersectPlatform(platform));
+
+        doodle.setPosition(20, 20);
+        assertFalse(doodle.intersectPlatform(platform));
     }
 }
