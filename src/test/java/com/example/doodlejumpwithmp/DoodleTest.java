@@ -1,5 +1,6 @@
 package com.example.doodlejumpwithmp;
 
+import com.example.doodlejumpwithmp.model.Direction;
 import com.example.doodlejumpwithmp.model.doodle.Doodle;
 import com.example.doodlejumpwithmp.model.platform.Platform;
 import org.junit.jupiter.api.Test;
@@ -24,15 +25,28 @@ public class DoodleTest {
         doodle.moveY(platforms);
         assertEquals(-11, doodle.getDiffY()); // if jumped;
 
-        for (int i = 0; i < 10; i++) doodle.moveY(platforms);
-        assertEquals(150, doodle.getX()); // x coordinate not changed
+        for (int i = 0; i < 10; i++) doodle.moveY(platforms); // new frames calculated
+        assertEquals(150, doodle.getX()); // coordinateX is not changed
         assertTrue(doodle.getY() < 150); // doodle moved up after jump
     }
 
     @Test
     public void moveXTest() {
         Doodle doodle = new Doodle(null);
+        double lastX = 150, lastY = 150;
+        doodle.setPosition(lastX, lastY);
 
+        // move left
+        doodle.moveX(Direction.LEFT);
+        assertTrue(doodle.getX() < lastX); // after motion to left
+        lastX = doodle.getX();
+
+        // move right
+        doodle.moveX(Direction.RIGHT);
+        assertTrue(doodle.getX() > lastX); // after motion to right
+        lastX = doodle.getX();
+
+        assertEquals(lastY, doodle.getY()); // coordinateY is not changed
     }
 
     @Test
