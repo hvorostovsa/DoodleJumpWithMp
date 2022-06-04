@@ -1,8 +1,9 @@
-module com.example.offlinemessenger {
+module com.example.doodlejumpwithmp {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
     requires com.alibaba.fastjson2;
+//    requires org.junit.platform.engine;
 
     opens com.example.doodlejumpwithmp to javafx.fxml;
     exports com.example.doodlejumpwithmp;

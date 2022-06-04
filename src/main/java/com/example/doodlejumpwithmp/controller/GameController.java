@@ -266,9 +266,8 @@ public class GameController {
 
     private void getNewInfo() {
         if (isServer) { // server
-            LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
-            while (receivedRequests.size() > 0) {
-                JSONObject response = receivedRequests.pop();
+            JSONObject response = server.popRequest();
+            while (response != null) {
                 int code = response.getIntValue(ServerParameter.CODE.toString());
                 ServerKey serverKey = ServerKey.getKeyByCode(code);
                 switch (serverKey) {
@@ -278,6 +277,7 @@ public class GameController {
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + serverKey);
                 }
+                response = server.popRequest();
             }
         } else if (isClient) { // client
             LinkedList<JSONObject> receivedRequests = client.getReceivedRequests();

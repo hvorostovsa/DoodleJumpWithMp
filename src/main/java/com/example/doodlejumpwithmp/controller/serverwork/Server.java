@@ -26,6 +26,14 @@ public class Server extends Thread {
         return receivedRequests;
     }
 
+    public synchronized JSONObject popRequest() {
+        try {
+            return receivedRequests.pop();
+        } catch (NoSuchElementException ignored) {
+            return null;
+        }
+    }
+
     public synchronized void addReceivedRequest(JSONObject jsonObject) {
         receivedRequests.add(jsonObject);
     }

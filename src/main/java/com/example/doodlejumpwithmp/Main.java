@@ -34,7 +34,7 @@ public class Main extends Application {
     private ScreenMode screenMode = ScreenMode.START_MENU;
     private boolean screenModeIsChanged = true;
 
-    static Image background = new Image(
+    public static Image background = new Image(
             MainUtils.getFilePathFromResources("background.png"),
             SCREEN_WIDTH, SCREEN_HEIGHT, false, false
     );

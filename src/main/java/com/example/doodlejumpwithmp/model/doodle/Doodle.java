@@ -10,8 +10,8 @@ import javafx.scene.image.Image;
 import java.util.List;
 
 public class Doodle {
-    private static final int WIDTH = 60;
-    private static final int HEIGHT = 80;
+    public static final int WIDTH = 60;
+    public static final int HEIGHT = 80;
     private static final int BASE_INDENT_LEFT_LEG = 7;
     private static final int BASE_INDENT_RIGHT_LEG = 22;
 

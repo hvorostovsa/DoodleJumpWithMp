@@ -59,10 +59,8 @@ public class ClientServerController {
     private void beforeStartServerWork() {
         Server server = gameController.getServer();
         if (server != null) {
-            LinkedList<JSONObject> receivedRequests = server.getReceivedRequests();
-            JSONObject response;
-            while (receivedRequests.size() > 0) {
-                response = receivedRequests.pop();
+            JSONObject response = server.popRequest();
+            while (response != null) { // while response remain;
                 int code = response.getIntValue(ServerParameter.CODE.toString());
                 ServerKey serverKey = ServerKey.getKeyByCode(code);
                 switch (serverKey) {
@@ -72,6 +70,7 @@ public class ClientServerController {
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + serverKey);
                 }
+                response = server.popRequest();
             }
         }
     }
