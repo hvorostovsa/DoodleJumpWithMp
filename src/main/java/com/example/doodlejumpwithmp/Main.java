@@ -38,7 +38,6 @@ public class Main extends Application {
             MainUtils.getFilePathFromResources("background.png"),
             SCREEN_WIDTH, SCREEN_HEIGHT, false, false
     );
-
     public static Image platformImage = new Image(
             MainUtils.getFilePathFromResources("Normal_platform.png"),
             Platform.getWidth(), Platform.getHeight(), false, false

@@ -3,8 +3,8 @@ package com.example.doodlejumpwithmp.model.platform;
 import javafx.scene.image.Image;
 
 public class Platform {
-    private static final int WIDTH = 70;
-    private static final int HEIGHT = 15;
+    public static final int WIDTH = 70;
+    public static final int HEIGHT = 15;
 
     private double coordinateX;
     private double coordinateY;
@@ -50,8 +50,8 @@ public class Platform {
     }
 
     public boolean intersectPlatform(Platform platform) {
-        double rightX = coordinateX + platformImage.getWidth();
-        double platformTopRightX = platform.getX() + platform.getImage().getWidth();
+        double rightX = coordinateX + WIDTH;
+        double platformTopRightX = platform.getX() + WIDTH;
         return ((coordinateX >= platform.getX() && coordinateX <= platformTopRightX) ||
                         (rightX >= platform.getX() && rightX <= platformTopRightX));
     }

@@ -178,9 +178,9 @@ public class Doodle {
 
     public boolean intersectPlatform(Platform platform) {
         double leftLeg = coordinateX + indentLeftLeg;
-        double rightLeg = coordinateX + characterImage.getWidth() - indentRightLeg;
-        double bottom = coordinateY + characterImage.getHeight();
-        double platformTopRightX = platform.getX() + platform.getImage().getWidth();
+        double rightLeg = coordinateX + Doodle.WIDTH - indentRightLeg;
+        double bottom = coordinateY + Doodle.HEIGHT;
+        double platformTopRightX = platform.getX() + Platform.WIDTH;
         return (bottom > platform.getY() && bottom < platform.getY() + 15) &&
                 ((leftLeg >= platform.getX() && leftLeg <= platformTopRightX) ||
                         (rightLeg >= platform.getX() && rightLeg <= platformTopRightX));
