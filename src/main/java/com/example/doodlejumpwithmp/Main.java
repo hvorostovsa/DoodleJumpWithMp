@@ -131,7 +131,7 @@ public class Main extends Application {
         gameController = new GameController(this);
         clientServerController = new ClientServerController(this, gameController);
         stage.setResizable(false);
-
+        stage.setTitle("Doodle Jump");
         Group gameRoot = new Group();
         Scene scene = new Scene(gameRoot, SCREEN_WIDTH, SCREEN_HEIGHT);
         Canvas canvas = new Canvas(scene.getWidth(), scene.getHeight());

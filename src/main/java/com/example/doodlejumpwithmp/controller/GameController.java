@@ -110,8 +110,6 @@ public class GameController {
         gameOver = false;
         isClient = false;
         isServer = false;
-        server = null;
-        client = null;
         counter = 0;
         score = 0;
         random = new Random();
