@@ -154,7 +154,6 @@ public class Main extends Application {
             @Override
             public void handle(long now) {
                 if (screenModeIsChanged) {
-                    System.out.println(1);
                     screenModeIsChanged = false;
                     switch (screenMode) {
                         case SINGLE_GAME, MULTIPLAYER_GAME -> {

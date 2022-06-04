@@ -54,7 +54,9 @@ public class Client extends Thread {
             while (!stopped) {
                 String response = read();
 //                System.out.println(response);
-                receivedRequests.add(JSON.parseObject(response));
+                synchronized (this) {
+                    receivedRequests.add(JSON.parseObject(response));
+                }
             }
         } catch (IOException exception) {
             this.close();

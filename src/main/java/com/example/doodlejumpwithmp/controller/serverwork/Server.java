@@ -22,11 +22,11 @@ public class Server extends Thread {
     private boolean stopped = false;
     private int lastIdSet = 0; // server id = 0
 
-    public LinkedList<JSONObject> getReceivedRequests() {
+    public synchronized LinkedList<JSONObject> getReceivedRequests() {
         return receivedRequests;
     }
 
-    public void addReceivedRequest(JSONObject jsonObject) {
+    public synchronized void addReceivedRequest(JSONObject jsonObject) {
         receivedRequests.add(jsonObject);
     }
 
@@ -161,7 +161,6 @@ public class Server extends Thread {
 
         @Override
         public void run() {
-            this.interrupt();
             try {
                 while (!stopped) {
                     try {

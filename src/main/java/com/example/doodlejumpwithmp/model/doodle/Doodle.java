@@ -98,7 +98,7 @@ public class Doodle {
         return characterImage;
     }
 
-    public Doodle(Image characterImage){
+    public Doodle(Image characterImage) {
         this.coordinateY = 0;
         this.coordinateX = 0;
         this.characterImage = characterImage;
